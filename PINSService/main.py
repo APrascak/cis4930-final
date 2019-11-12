@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#hi
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from flask import Flask
+
+from google.cloud import firestore
 import requests
+from flask import Flask
 
-cred = credentials.Certificate("../../credentials/pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json")
-if (not len(firebase_admin._apps)):
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
 
-app = Flask(__name__) 
+db = firestore.Client.from_service_account_json('../../credentials/pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json')
 
+app = Flask(__name__)
 
 
 def getUserHoldingsDb(userID):
@@ -37,7 +32,6 @@ def updateUserHoldingsDb(userID, amnt, action):
     doc_ref = doc_ref.set({
             u'stock_amnt': updatedStocks
             })
-
     return 1
 
 def obsGetAvailableStocks():
@@ -111,7 +105,7 @@ def buyStocks(userID, amount):
     bankholdings = obsGetAvailableStocks()['total_stocks']
     if amount > bankholdings:
         amntNeeded = amount - bankholdings 
-        obsUpdateStockHoldings(amntNeeded, "buy")
+        obsUpdateStockHoldings((amntNeeded + 1), "buy")
     # bank sells stocks
     obsUpdateStockHoldings(amount, "sell")
     # user buys stock
