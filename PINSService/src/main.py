@@ -6,9 +6,7 @@ from google.cloud import firestore
 import requests
 from flask import Flask
 
-
-db = firestore.Client.from_service_account_json('../credentials/pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json')
-
+db = firestore.Client.from_service_account_json('/Users/Sydney/Desktop/cis4930-final/PINSService/src/pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json')
 app = Flask(__name__)
 
 
