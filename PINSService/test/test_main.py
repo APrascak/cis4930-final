@@ -5,6 +5,8 @@
 
 import pytest
 from src.main import app
+import requests
+import json
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -18,7 +20,19 @@ def test_client():
  
     yield testing_client  # this is where the testing happens!
     ctx.pop()
+    
 
+def getStockPrice():
+    try:
+        response = requests.get('https://sandbox.tradier.com/v1/markets/quotes',
+                                params={'symbols': 'PINS,VXX190517P00016000', 'greeks': 'false'},
+                                headers={'Authorization': 'Bearer uZOWMJ0Hh2jcz2g9GE2Xa9YNPhMC', 'Accept': 'application/json'})
+    except requests.exceptions.RequestException as e:
+        print("Get stock price request error: ", e)
+        
+    resp_json = response.json()
+    lastPrice = resp_json["quotes"]["quote"]["last"]
+    return lastPrice
 
 
 def test_home_page(test_client):
@@ -31,3 +45,23 @@ def test_home_page(test_client):
     assert response.status_code == 200
     assert b"Welcome to Python Server" in response.data
 
+def test_get_stock_price(test_client):
+    """
+    GIVEN a Flask application
+    WHEN the '/getStockPrice' page is requested (GET)
+    THEN check the response is current stock price from tradier
+    """
+    expectedPrice = getStockPrice()
+    response = test_client.get('/getStockPrice') 
+    
+    assert response.status_code == 200
+    assert expectedPrice == json.loads( response.data )['stock_price']
+    
+    
+    
+    
+    
+    
+    
+    
+    
