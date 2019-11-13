@@ -2,7 +2,7 @@
 # Alex Prascak
 
 from flask import Flask
-import httplib
+import requests
 import json
 
 app = Flask(__name__)
@@ -11,22 +11,24 @@ app = Flask(__name__)
 def index():
 	return "Python server"
 
+def uber_price():
+	try:
+		response = requests.get('https://sandbox.tradier.com/v1/markets/quotes',
+			params={'symbols': 'UBER,VXX190517P00016000', 'greeks': 'false'},
+			headers={'Authorization': 'Bearer n7UzJWyS028Oi8PianpcNseKBI6j', 'Accept': 'application/json'}
+		)
+
+	except requests.exceptions.RequestException as e:
+	  return('Exception during request')
+
+	else:
+		json_response = response.json()
+		price = json_response["quotes"]["quote"]["last"]
+		return price
+
 @app.route("/price",)
 def price():
-	# Request: Market Quotes (https://sandbox.tradier.com/v1/markets/quotes?symbols=spy)
-	connection = httplib.HTTPSConnection('sandbox.tradier.com', 443, timeout = 30)
+	return {"uber_price": uber_price()}
 
-	# Headers
-	headers = {"Accept":"application/json",
-	           "Authorization":"Bearer n7UzJWyS028Oi8PianpcNseKBI6j"}
-
-	# Send synchronously
-	connection.request('GET', '/v1/markets/quotes?symbols=uber', None, headers)
-	try:
-	  response = connection.getresponse()
-	  content = response.read()
-	  json_data = json.loads(content)
-	  return json_data['quotes']['quote']['last'] # most recent price
-
-	except httplib.HTTPException, e:
-	  return('Exception during request')
+if __name__ == '__main__':
+	app.run(debug=True)
