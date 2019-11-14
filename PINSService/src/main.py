@@ -10,6 +10,7 @@ db = firestore.Client.from_service_account_json('/Users/Sydney/Desktop/cis4930-f
 app = Flask(__name__)
 
 
+
 def getUserHoldingsDb(userID):
     doc_ref = db.collection(u'UserHoldings_PINS').document(userID)
     try:
@@ -94,7 +95,7 @@ def getUser(userID):
 
 @app.route("/getOBSHoldings",) 
 def getOBS():
-    result = {"stock_amnt": obsGetAvailableStocks()}
+    result = {"stock_amnt": obsGetAvailableStocks()['total_stocks']}
     return result
 
 @app.route("/buy/<userID>/<int:amount>")
