@@ -2,9 +2,14 @@
 Will most likely want to store each user's information in a local database which will also store all admin stuff
 Also get a second database to log all transactions for the admin interface.
 """
+
+#Also, nosql is for scrubs
+
 from flask import Flask, jsonify, request
+import time, datetime
 import mysql.connector
 import requests
+import string
 
 
 adminToken = 'adminToken1337'
@@ -19,6 +24,22 @@ db_name = 'stockMicroservice'
 
 def error(msg):
 	return jsonify({"error": msg})
+
+
+def getPrice():
+	headers = {"Accept":"application/json",
+           "Authorization":"Bearer C8JeJKW7czXRFB04ze8acr8WORGn"}
+	try:
+		response = requests.get('https://sandbox.tradier.com/v1/markets/quotes?symbols=rtn', headers=headers)
+		content = str(response.content)
+		price = content.split('"last":')[1].split(',')[0]#Dumb parsing
+		return price
+	except:
+		return "Error encountered when getting information"
+
+
+#====================================================================
+
 
 def query_db(db, query, params, fetch = False):
 	#Use a cursor.
@@ -49,12 +70,9 @@ def establish_connection_with_db():
 	except:
 		return -1
 
+#====================================================================
 
-#Insert into users with balance = 0
-def createNewUser(token):
-	return True
-
-#Will need to implement this properly; connects to database and sees how many stocks this user has.
+#Make sure the token is pre-validated before doing this part.
 def getUserStocks(token):
 	db = establish_connection_with_db()
 	query = "SELECT * FROM users WHERE token = (%s)" 
@@ -64,30 +82,57 @@ def getUserStocks(token):
 	return amount
 
 
+def getUserBalance(token):
+	db = establish_connection_with_db()
+	query = "SELECT * FROM users where token = (%s)"
+	res = query_db(db, query, (token,), True)
+	balance = res[0][2]
+	db.close()
+	return float(balance)
+
 
 def validateToken(token):
 	#Ideally we would query our userdb to see if such a user actually exists.
-	if not token:
-		return False
-	return True
-
-def getPrice():
-	headers = {"Accept":"application/json",
-           "Authorization":"Bearer C8JeJKW7czXRFB04ze8acr8WORGn"}
-	try:
-		response = requests.get('https://sandbox.tradier.com/v1/markets/quotes?symbols=rtn', headers=headers)
-		content = str(response.content)
-		price = content.split('"last":')[1].split(',')[0]#Dumb parsing
-		return price
-	except:
-		return "Error encountered when getting information"
+	db = establish_connection_with_db()
+	query = "SELECT * FROM users WHERE token = (%s)"
+	res = query_db(db, query, (token,), True)
+	return len(res) > 0
 
 
 #Update the current amount in the database here
 def updateUserStocks(token, amount):
 	price = float(getPrice())
-	#change by amount * price, log somewhere as well
+	ts = time.time()
+	timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	
+	#First log this transaction.
+	db = establish_connection_with_db()
+	query = "INSERT INTO logs(token, action, amount, time) VALUES (%s, %s, %s, %s)"
+	#This is a sell
+	if amount < 0:
+		query_db(db, query, (token, "sell", abs(amount), timestamp))
+	else:#Buy
+		query_db(db, query, (token, "buy", abs(amount), timestamp))
+	
+	currentStocks = getUserStocks(token)
+	currentBalance = getUserBalance(token)
+	total = round(price * amount, 2)
+	newStocks = currentStocks + amount
+	newBalance = currentBalance - total
+	
+	#Then we want to update the amounts.
+	query = "UPDATE users SET stocks = %s, balance = %s where token = %s"
+	query_db(db, query, (newStocks, newBalance, token))
+	
 	return True
+
+
+#Make a new user with 0 stocks and 0 profit.
+def createUser(token):
+	db = establish_connection_with_db()
+	query = "INSERT INTO users(token, stocks, balance) VALUE (%s, %s, %s)"
+	query_db(db, query, (token, 0, 0.0))
+	return
 
 
 def createApp():
@@ -110,14 +155,14 @@ def createApp():
 		
 		#Here we will check if the bank has enough stocks, although it won't ever fail.
 		amount = int(amount)
-		currentAmount = getUserStocks('admi')
+		currentAmount = int(getUserStocks('adminToken1337'))
 		#If the bank doesn't have enough stocks, buy as many as is needed.
 		if currentAmount < amount:
-			updateUserStocks('admin', amount - currentAmount + 1)# +1 because the bank must at least have 1 stock.
-		updateUserStocks('admin', -amount)
+			updateUserStocks('adminToken1337', amount - currentAmount + 1)# +1 because the bank must at least have 1 stock.
+		updateUserStocks('adminToken1337', -amount)
 		updateUserStocks(token, amount)#Purchase x stocks
 		
-		return jsonify({"status:", "success"})
+		return jsonify({"status" : "success"})
 
 	@foo.route('/sell', methods = ['POST'])
 	def sell():
@@ -138,11 +183,12 @@ def createApp():
 		#Here we will check if the token user has enough stocks to sell.
 		amount = int(amount)
 		if getUserStocks(token) < amount:
-			return error("Invalid amount")
+			return error("Cannot sell more stocks than are owned")
 		
 		#The user can sell this much, thus we want to update the total amount here.
-		updateUserStock(token, -amount)
-		return jsonify({"status:", "success"})
+		updateUserStocks(token, -amount)
+		updateUserStocks('adminToken1337', amount)
+		return jsonify({"status" : "success"})
 	
 
 	#Require validation of token, thus restrict to only POST
@@ -163,15 +209,34 @@ def createApp():
 	def default():
 		return "Hello there"
 	
-	@foo.route('/getUserStock', methods = ['GET', 'POST'])
+	@foo.route('/getUserHoldings', methods = ['GET', 'POST'])
 	def getStocks():
 		json = request.get_json()
 		if not json or 'token' not in json:
 			return error("No token provided")
 		token = json['token']
+		if not validateToke(token):
+			return error("Invalid token 1337")
 		return jsonify({'amount': getUserStocks(token)})
-		
-	@foo.route('/getAdminLogs')
+	
+	#Call this endpoint to add a user.
+	@foo.route('/addUser', methods = ['GET', 'POST'])
+	def addUser():
+		json = request.get_json()
+		if not json or 'token' not in json:
+			return error("No token provided")
+		token = json['token']
+		if validateToken(token):
+			return error("User already exists")
+		createUser(token)
+		return jsonify({"status": "success"})
+	
+	#Will get the bank's current holdings.
+	@foo.route('/getOBSHoldings', methods = ['POST'])
+	def getBankStocks():
+		return jsonify({'amount': getUserStocks('adminToken1337')})
+	
+	@foo.route('/getOBSLogs')
 	def adminLogs():
 		#Connect to database, only get things that have token = admin and get a list of all of the transaction logs
 		return "Admin logs..."
@@ -185,4 +250,6 @@ if __name__ == '__main__':
 	
 	
 #Curl querying curl -d '{"token": "adminToken1337"}' -H "Content-Type: application/json" -X POST http://localhost:8080/getStockPrice
+#curl -d '{"token": "sampleUser"}' -H "Content-Type: application/json" -X POST http://localhost:8080/addUser
+
 #When deployed: curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
