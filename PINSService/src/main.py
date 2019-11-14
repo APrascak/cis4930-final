@@ -28,7 +28,8 @@ def getUserHoldingsDb(userID):
     doc_ref = db.collection(u'UserHoldings_PINS').document(userID)
     try:
         doc = doc_ref.get()
-        return  {"stock_amnt" :(doc.to_dict()['stock_amnt'])}
+        print("doc.to_dict()['stock_amnt'] ", doc.to_dict()['stock_amnt'])
+        return  doc.to_dict()
     except TypeError:
         return {"stock_amnt" : 0}
 
@@ -50,11 +51,9 @@ def obsGetAvailableStocks():
     doc_ref = db.collection(u'OBS_holdings').document('FGABKyqIk71Fn8e1n94j')
     try:
         doc = doc_ref.get()
-        return  {
-                "total_stocks": doc.to_dict()['total_stocks'],
-                 }
+        return doc.to_dict()
     except TypeError:
-        return 0
+        return {"total_stocks" : 0}
    
 def obsUpdateStockHoldings(amount, action):
     # add or sell additional stocks
@@ -85,12 +84,12 @@ def getStockPrice():
 
 @app.route("/getUserHoldings/<userID>",) 
 def getUser(userID):
-    result = {"stock_amnt": getUserHoldingsDb(userID)}
+    result =  getUserHoldingsDb(userID)
     return result
 
 @app.route("/getOBSHoldings",) 
 def getOBS():
-    result = {"obs_holdings": obsGetAvailableStocks()['total_stocks']}
+    result =  obsGetAvailableStocks()
     return result
 
 @app.route("/buy/<userID>/<int:amount>")
