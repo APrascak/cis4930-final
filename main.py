@@ -70,6 +70,12 @@ def establish_connection_with_db():
 	except:
 		return -1
 
+	
+def getLogs():
+	db = establish_connection_with_db()
+	query = 'SELECT * FROM logs WHERE token = "adminToken1337"'
+	res = query_db(db, query, None, True)
+	return res
 #====================================================================
 
 #Make sure the token is pre-validated before doing this part.
@@ -141,6 +147,8 @@ def createApp():
 	@foo.route('/buy', methods= ['POST'])
 	def buy():
 		json = request.get_json()
+		if not json or 'token' not in json or 'amount' not in json:
+			return error("Invalid parameters.")
 		token = json['token']
 		amount = json['amount']#subject to change
 		if not token or not amount:
@@ -167,6 +175,8 @@ def createApp():
 	@foo.route('/sell', methods = ['POST'])
 	def sell():
 		json = request.get_json()
+		if not json or 'token' not in json or 'amount' not in json:
+			return error("Invalid parameters.")
 		token = json['token']
 		amount = json['amount']#subject to change
 		if not token or not amount:
@@ -239,6 +249,8 @@ def createApp():
 	@foo.route('/getOBSLogs')
 	def adminLogs():
 		#Connect to database, only get things that have token = admin and get a list of all of the transaction logs
+		logs = getLogs()
+		print(logs)
 		return "Admin logs..."
 	
 	return foo
