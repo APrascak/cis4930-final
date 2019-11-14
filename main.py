@@ -37,9 +37,9 @@ def updateUserStocks(token, amount):
 	return True
 
 def createApp():
-	app = Flask(__name__)
+	foo = Flask(__name__)
 
-	@app.route('/buy', methods= ['POST'])
+	@foo.route('/buy', methods= ['POST'])
 	def buy():
 		json = request.get_json()
 		token = json['token']
@@ -68,7 +68,7 @@ def createApp():
 		
 		return jsonify({"status:", "success"})
 
-	@app.route('/sell', methods = ['POST'])
+	@foo.route('/sell', methods = ['POST'])
 	def sell():
 		json = request.get_json()
 		token = json['token']
@@ -99,7 +99,7 @@ def createApp():
 	
 
 	#Require validation of token, thus restrict to only POST
-	@app.route('/getStockPrice', methods = ['GET', 'POST'])
+	@foo.route('/getStockPrice', methods = ['GET', 'POST'])
 	def currentPrice():
 		json = request.get_json()
 		if not json or 'token' not in json:
@@ -114,19 +114,22 @@ def createApp():
 		response = {'price': price}
 		return jsonify(response)
 	
+	@foo.route('/')
+	def default():
+		return "Hello there"
 	
-	@app.route('/getAdminLogs')
+	@foo.route('/getAdminLogs')
 	def adminLogs():
 		#Connect to database, only get things that have token = admin and get a list of all of the transaction logs
 		return "Admin logs..."
 	
-	return app
+	return foo
 
 
-if __name__ == "__main__":
-	app = createApp()
-	app.run(host = '127.0.0.1', port=8080)
+app = createApp()
+if __name__ == '__main__':
+	app.run(host = "127.0.0.1", port=8080, debug=True)
 	
 	
 #Curl querying curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://localhost:8080/getStockPrice
-
+#When deployed: curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
