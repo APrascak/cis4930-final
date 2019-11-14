@@ -17,7 +17,7 @@ def get_price():
 			headers={'Authorization': 'Bearer n7UzJWyS028Oi8PianpcNseKBI6j', 'Accept': 'application/json'}
 		)
 	except requests.exceptions.RequestException as e:
-	  return('Exception during request')
+	  return('Exception during request' + str(e))
 	else:
 		json_response = response.json()
 		price = json_response["quotes"]["quote"]["last"]
@@ -39,25 +39,62 @@ def obs_holdings():
 	except:
 		return 'Error'
 
+def update_obs_holdings(amount):
+	ref = db.collection('obs-holding').document("obs-uber")
+	try:
+		ref.set({
+			u"shares": amount
+		})
+	except:
+		return False
+
+def updates_user_holdings(userID, amount):
+	ref = db.collection('user-shares').document(userID)
+	current_holdings = ref.get().to_dict()['shares']
+	try:
+		ref.set({
+			u"shares": (current_holdings + amount)
+		})
+	except:
+		print("Error occured during user stock purchasing.")
+
 @app.route("/",)
 def index():
 	return "OBS Uber Microservice"
 
-@app.route("/price",)
+@app.route("/getStockPrice",)
 def price():
 	return {"uber_price": get_price()}
 
-@app.route("/userHoldings/<userID>",)
+@app.route("/getUserHoldings/<userID>",)
 def userHoldings(userID):
 	return {"user_shares": user_holdings(userID)['shares']}
 
-@app.route("/obsHoldings",)
+@app.route("/getOBSHoldings",)
 def obsHoldings():
 	return {"obs_shares": obs_holdings()['shares']}
 
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):
-	return "Stocks successfully purchased."
+	obs_position = obs_holdings()['shares']
+	if amount >= obs_position:
+		update_obs_holdings(5000)
+	else:
+		update_obs_holdings(obs_position - amount)
+	updates_user_holdings(userID,amount)
+	return {"testing": obs_holdings()['shares']}
+
+@app.route("/sell/<userID>/<int:amount>")
+def sell(userID, amount):
+	obs_position = obs_holdings()['shares']
+	user_position = user_holdings(userID)['shares']
+	if amount > user_holdings:
+		return 'Error: insufficient user inventory.'
+	else:
+		return {
+			"user": userID,
+			"shares": amount
+		}
 
 if __name__ == '__main__':
 	app.run(debug=True)
