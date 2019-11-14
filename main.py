@@ -5,6 +5,7 @@ from flask import Flask
 from google.cloud import firestore
 import requests
 import json
+import datetime
 
 app = Flask(__name__)
 db = firestore.Client.from_service_account_json('uber-stock-microservice-firebase-adminsdk-vzk11-6813665ba9.json')
@@ -58,6 +59,16 @@ def updates_user_holdings(userID, amount):
 	except:
 		print("Error occured during user stock purchasing.")
 
+def log_action(userID,amount,action):
+	data = {
+		"action": action,
+		"user": userID,
+		"amount": amount
+	}
+	print(data)
+	print(data['action'])
+	db.collection('logs').document(str(datetime.datetime.now())).set(data)
+
 @app.route("/",)
 def index():
 	return "OBS Uber Microservice"
@@ -77,23 +88,35 @@ def obsHoldings():
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):
 	obs_position = obs_holdings()['shares']
+	action = u"buy"
 	if amount >= obs_position:
 		update_obs_holdings(5000)
+		updates_user_holdings(userID,amount)
+		log_action(userID,amount,action)
 	else:
 		update_obs_holdings(obs_position - amount)
-	updates_user_holdings(userID,amount)
-	return {"testing": obs_holdings()['shares']}
+		updates_user_holdings(userID,amount)
+		log_action(userID,amount,action)
+	return {
+		"obs_position": obs_holdings()['shares'],
+		"user_position": user_holdings(userID)['shares']
+	}
 
 @app.route("/sell/<userID>/<int:amount>")
 def sell(userID, amount):
 	obs_position = obs_holdings()['shares']
 	user_position = user_holdings(userID)['shares']
-	if amount > user_holdings:
+	action=u"sell"
+	if amount > user_position:
 		return 'Error: insufficient user inventory.'
 	else:
+		# Add sale implementation
+		update_obs_holdings(obs_position + amount)
+		updates_user_holdings(userID,amount * -1)
+		log_action(userID,amount,action)
 		return {
-			"user": userID,
-			"shares": amount
+			"obs_position": obs_holdings()['shares'],
+			"user_position": user_holdings(userID)['shares']
 		}
 
 if __name__ == '__main__':
