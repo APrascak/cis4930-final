@@ -10,8 +10,8 @@ Individual implementations in respective branches.
 The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0)  
 * American Express: https://americanexpressservice.appspot.com/  
 * Pinterest: http://pinterestservice.appspot.com/  
-* Raytheon:  
-* Snapchat:  
+* Raytheon:  https://sonorous-bounty-258117.appspot.com/
+* Snapchat:  https://firestore-demo-3ebe9.appspot.com
 * Uber: https://aqueous-choir-258117.appspot.com/  
 
 ### Firebase Authentication
