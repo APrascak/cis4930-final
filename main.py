@@ -7,6 +7,7 @@ import requests
 import json
 import datetime
 
+
 app = Flask(__name__)
 db = firestore.Client.from_service_account_json('uber-stock-microservice-firebase-adminsdk-vzk11-6813665ba9.json')
 
@@ -65,8 +66,6 @@ def log_action(userID,amount,action):
 		"user": userID,
 		"amount": amount
 	}
-	print(data)
-	print(data['action'])
 	db.collection('logs').document(str(datetime.datetime.now())).set(data)
 
 @app.route("/",)
@@ -75,15 +74,15 @@ def index():
 
 @app.route("/getStockPrice",)
 def price():
-	return {"uber_price": get_price()}
+	return {"stock_price": get_price()}
 
 @app.route("/getUserHoldings/<userID>",)
 def userHoldings(userID):
-	return {"user_shares": user_holdings(userID)['shares']}
+	return {"shares": user_holdings(userID)['shares']}
 
 @app.route("/getOBSHoldings",)
 def obsHoldings():
-	return {"obs_shares": obs_holdings()['shares']}
+	return {"shares": obs_holdings()['shares']}
 
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):
@@ -98,8 +97,8 @@ def buy(userID,amount):
 		updates_user_holdings(userID,amount)
 		log_action(userID,amount,action)
 	return {
-		"obs_position": obs_holdings()['shares'],
-		"user_position": user_holdings(userID)['shares']
+		"obs_shares": obs_holdings()['shares'],
+		"user_shares": user_holdings(userID)['shares']
 	}
 
 @app.route("/sell/<userID>/<int:amount>")
@@ -115,8 +114,8 @@ def sell(userID, amount):
 		updates_user_holdings(userID,amount * -1)
 		log_action(userID,amount,action)
 		return {
-			"obs_position": obs_holdings()['shares'],
-			"user_position": user_holdings(userID)['shares']
+			"obs_shares": obs_holdings()['shares'],
+			"user_shares": user_holdings(userID)['shares']
 		}
 
 if __name__ == '__main__':
