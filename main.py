@@ -236,8 +236,10 @@ def createApp():
 	def default():
 		return "Greetings, nothing to see here..."
 	
-	@foo.route('/getUserHoldings', methods = ['GET'])
-	def getStocks():
+	
+	#My version has to be a post request, for whatever reason...
+	@foo.route('/getUserHoldings', methods = ['POST'])
+	def getUserHoldings():
 		json = request.get_json()
 		if not json or 'userID' not in json:
 			return error("No token provided")
@@ -283,3 +285,5 @@ if __name__ == '__main__':
 #curl -d '{"token": "sampleUser"}' -H "Content-Type: application/json" -X POST http://localhost:8080/addUser
 
 #When deployed: curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
+
+#curl -X GET -H "Content-Type: application/json" -d '{"userID": "sampleUser"}' http://sonorous-bounty-258117.appspot.com/getUserHoldings
