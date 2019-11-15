@@ -5,6 +5,7 @@
 from google.cloud import firestore
 import requests
 from flask import Flask
+import datetime
 
 db = firestore.Client.from_service_account_json('/Users/Sydney/Desktop/cis4930-final/PINSService/src/pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json')
 app = Flask(__name__)
@@ -72,7 +73,15 @@ def obsUpdateStockHoldings(amount, action):
             
     return 1
 
-
+def log_action(userID,amount,action):
+	data = {
+		"action": action,
+		"user": userID,
+		"amount": amount
+	}
+	print(data)
+	print(data['action'])
+	db.collection('logs').document(str(datetime.datetime.now())).set(data)
 
 
 @app.route("/",) 
@@ -98,6 +107,7 @@ def getOBS():
 def buyStocks(userID, amount):
     #check bank holdings
     bankholdings = obsGetAvailableStocks()['shares']
+    action=u"buy"
     if amount > bankholdings:
         amntNeeded = amount - bankholdings 
         obsUpdateStockHoldings((amntNeeded + 5000), "buy")
@@ -105,18 +115,21 @@ def buyStocks(userID, amount):
     obsUpdateStockHoldings(amount, "sell")
     # user buys stock
     updateUserHoldingsDb(userID, amount, "buy")
+    log_action(userID,amount,action)
     
     return { "obs_shares": obsGetAvailableStocks()['shares'], "user_shares": getUserHoldingsDb(userID)['shares'] }
 
 @app.route("/sell/<userID>/<int:amount>")
 def sellStocks(userID, amount):    
     holdings = getUserHoldingsDb(userID)['shares']
+    action=u"sell"
     if amount > holdings:
         return "Sorry you do not own enough stocks to sell that amount."
     # bank buys stock from user
     obsUpdateStockHoldings(amount,"buy")
     # user sells stock to bank
     updateUserHoldingsDb(userID, amount, "sell")
+    log_action(userID,amount,action)
     return { "obs_shares": obsGetAvailableStocks()['shares'], "user_shares": getUserHoldingsDb(userID)['shares'] }
 
 if __name__ == "__main__":
