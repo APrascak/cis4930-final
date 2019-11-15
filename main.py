@@ -3,7 +3,6 @@ Will most likely want to store each user's information in a local database which
 Also get a second database to log all transactions for the admin interface.
 """
 
-#Also, nosql is for scrubs
 
 from flask import Flask, jsonify, request
 import time, datetime
@@ -134,7 +133,7 @@ def updateUserStocks(token, amount):
 
 
 #Make a new user with 0 stocks and 0 profit.
-def createUser(token):
+def createUser(token):#pragma: no cover
 	db = establish_connection_with_db()
 	query = "INSERT INTO users(token, stocks, balance) VALUE (%s, %s, %s)"
 	query_db(db, query, (token, 0, 0.0))
@@ -246,11 +245,11 @@ def createApp():
 		token = json['userID']
 		if not validateToken(token):
 			return error("Invalid token")
-		return jsonify({'amount': getUserStocks(token)})
+		return jsonify({'shares': getUserStocks(token)})
 	
 	#Call this endpoint to add a user.
 	@foo.route('/addUser', methods = ['GET', 'POST'])
-	def addUser():
+	def addUser():#pragma: no cover
 		json = request.get_json()
 		if not json or 'userID' not in json:
 			return error("No token provided")
@@ -263,10 +262,10 @@ def createApp():
 	#Will get the bank's current holdings.
 	@foo.route('/getOBSHoldings', methods = ['GET'])
 	def getBankStocks():
-		return jsonify({'amount': getUserStocks('adminToken1337')})
+		return jsonify({'shares': getUserStocks('adminToken1337')})
 	
 	@foo.route('/getOBSLogs')
-	def adminLogs():
+	def adminLogs():#pragma: no cover
 		#Connect to database, only get things that have token = admin and get a list of all of the transaction logs
 		logs = getLogs()
 		print(logs)
@@ -276,7 +275,7 @@ def createApp():
 
 #Need to create the 'app' this way so google app engine doesn't flip out
 app = createApp()
-if __name__ == '__main__':
+if __name__ == '__main__':#pragma: no cover
 	app.run(host = "127.0.0.1", port=8080, debug=False)
 	
 	
