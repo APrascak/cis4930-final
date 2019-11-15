@@ -144,19 +144,20 @@ def createUser(token):
 def createApp():
 	foo = Flask(__name__)
 
+	#userID, amount 
 	@foo.route('/buy', methods= ['POST'])
 	def buy():
 		json = request.get_json()
-		if not json or 'token' not in json or 'amount' not in json:
+		if not json or 'userID' not in json or 'amount' not in json:
 			return error("Invalid parameters.")
-		token = json['token']
-		amount = json['amount']#subject to change
+		token = json['userID']
+		amount = int(json['amount'])#subject to change
 		if not token or not amount:
 			return error("Insufficient parameters. Please provide a valid user token and an amount to sell.")
 	
 		if not validateToken(token):
 			return error("Invalid token")
-		if not amount.isnumeric():#isnumeric prevents all floats and negative numbers, so we're pretty safe.
+		if not str(amount).isnumeric():#isnumeric prevents all floats and negative numbers, so we're pretty safe.
 			return error("Invalid amount")
 		
 		#Currently no validation to see if the use has the money necessary to carry out this transaction
@@ -170,21 +171,27 @@ def createApp():
 		updateUserStocks('adminToken1337', -amount)
 		updateUserStocks(token, amount)#Purchase x stocks
 		
-		return jsonify({"status" : "success"})
+		current_user_shares = getUserStocks(token)
+		current_bank_shares = getUserStocks('adminToken1337')
+		result = {
+			"obs_shares" : current_bank_shares,
+			"user_shares" : current_user_shares
+		}
+		return jsonify(result)
 
 	@foo.route('/sell', methods = ['POST'])
 	def sell():
 		json = request.get_json()
-		if not json or 'token' not in json or 'amount' not in json:
+		if not json or 'userID' not in json or 'amount' not in json:
 			return error("Invalid parameters.")
-		token = json['token']
+		token = json['userID']
 		amount = json['amount']#subject to change
 		if not token or not amount:
 			return error("Insufficient parameters. Please provide a valid user token and an amount to sell.")
 	
 		if not validateToken(token):
 			return error("Invalid token")
-		if not amount.isnumeric():#isnumeric prevents all floats and negative numbers, so we're pretty safe.
+		if not str(amount).isnumeric():#isnumeric prevents all floats and negative numbers, so we're pretty safe.
 			return error("Invalid amount")
 		
 		#Currently no validation to see if the user has the money necessary to carry out this transaction
@@ -198,12 +205,21 @@ def createApp():
 		#The user can sell this much, thus we want to update the total amount here.
 		updateUserStocks(token, -amount)
 		updateUserStocks('adminToken1337', amount)
-		return jsonify({"status" : "success"})
+		
+		current_user_shares = getUserStocks(token)
+		current_bank_shares = getUserStocks('adminToken1337')
+		result = {
+			"obs_shares" : current_bank_shares,
+			"user_shares" : current_user_shares
+		}
+		return jsonify(result)
 	
 
 	#Require validation of token, thus restrict to only POST
-	@foo.route('/getStockPrice', methods = ['GET', 'POST'])
+	#I guess we're allowing anyone to get this then
+	@foo.route('/getStockPrice', methods = ['GET'])
 	def currentPrice():
+		'''
 		json = request.get_json()
 		if not json or 'token' not in json:
 			return error("No token provided")
@@ -211,38 +227,39 @@ def createApp():
 		token = json['token']
 		if not validateToken(token):
 			return error("Invalid token provided")
+		'''
 		price = getPrice()
 		response = {'price': price}
 		return jsonify(response)
 	
 	@foo.route('/')
 	def default():
-		return "Hello there"
+		return "Greetings, nothing to see here..."
 	
-	@foo.route('/getUserHoldings', methods = ['GET', 'POST'])
+	@foo.route('/getUserHoldings', methods = ['GET'])
 	def getStocks():
 		json = request.get_json()
-		if not json or 'token' not in json:
+		if not json or 'userID' not in json:
 			return error("No token provided")
-		token = json['token']
-		if not validateToke(token):
-			return error("Invalid token 1337")
+		token = json['userID']
+		if not validateToken(token):
+			return error("Invalid token")
 		return jsonify({'amount': getUserStocks(token)})
 	
 	#Call this endpoint to add a user.
 	@foo.route('/addUser', methods = ['GET', 'POST'])
 	def addUser():
 		json = request.get_json()
-		if not json or 'token' not in json:
+		if not json or 'userID' not in json:
 			return error("No token provided")
-		token = json['token']
+		token = json['userID']
 		if validateToken(token):
 			return error("User already exists")
 		createUser(token)
 		return jsonify({"status": "success"})
 	
 	#Will get the bank's current holdings.
-	@foo.route('/getOBSHoldings', methods = ['POST'])
+	@foo.route('/getOBSHoldings', methods = ['GET'])
 	def getBankStocks():
 		return jsonify({'amount': getUserStocks('adminToken1337')})
 	
@@ -261,7 +278,8 @@ if __name__ == '__main__':
 	app.run(host = "127.0.0.1", port=8080, debug=False)
 	
 	
-#Curl querying curl -d '{"token": "adminToken1337"}' -H "Content-Type: application/json" -X POST http://localhost:8080/getStockPrice
+#Curl querying curl -d '{"userID": "sampleUser", "amount": 10}' -H "Content-Type: application/json" http://localhost:8080/buy
+
 #curl -d '{"token": "sampleUser"}' -H "Content-Type: application/json" -X POST http://localhost:8080/addUser
 
 #When deployed: curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
