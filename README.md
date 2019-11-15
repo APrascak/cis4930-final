@@ -8,7 +8,7 @@
 ### Microservices
 Individual implementations in respective branches.  
 The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0)  
-* American Express:  
+* American Express: https://americanexpressservice.appspot.com/  
 * Pinterest: http://pinterestservice.appspot.com/  
 * Raytheon:  
 * Snapchat:  
