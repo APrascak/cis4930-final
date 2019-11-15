@@ -1,5 +1,4 @@
 # Final OBS Project - Team 5
-------
 * Sydney Achinger
 * Alexander Prascak
 * Rahul Rudra
