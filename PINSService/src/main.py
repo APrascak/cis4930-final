@@ -32,8 +32,6 @@ def getUserHoldingsDb(userID):
     else:
         return {"shares" : 0}
   
-
-
 def updateUserHoldingsDb(userID, amnt, action):
 
     currStocks = getUserHoldingsDb(userID)['shares']
@@ -69,7 +67,6 @@ def obsUpdateStockHoldings(amount, action):
     doc_ref = doc_ref.set({
             u'shares': updatedStocks,
             })
-            
     return 1
 
 
