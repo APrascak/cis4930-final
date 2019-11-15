@@ -3,6 +3,7 @@ from flask import Flask
 from google.cloud import firestore
 import requests
 import json
+import datetime
 
 app = Flask(__name__)
 db = firestore.Client.from_service_account_json('cisproject2-firebase-adminsdk-p3dru-ffd0d7e5ed.json')
@@ -29,7 +30,7 @@ def user_holdings(userID):
 		return 'Error.'
 
 def obs_holdings():
-	ref = db.collection('obs-holding').document("obs-uber")
+	ref = db.collection('obs').document("axp")
 	try:
 		doc = ref.get()
 		return {"shares": (doc.to_dict()['shares'])}
@@ -37,7 +38,7 @@ def obs_holdings():
 		return 'Error'
 
 def update_obs_holdings(amount):
-	ref = db.collection('obs-holding').document("obs-uber")
+	ref = db.collection('obs').document("axp")
 	try:
 		ref.set({
 			u"shares": amount
@@ -55,13 +56,23 @@ def updates_user_holdings(userID, amount):
 	except:
 		print("Error occured during user stock purchasing.")
 
+def log_action(userID,amount,action):
+	data = {
+		"action": action,
+		"user": userID,
+		"amount": amount
+	}
+	print(data)
+	print(data['action'])
+	db.collection('logs').document(str(datetime.datetime.now())).set(data)
+
 @app.route("/",)
 def index():
 	return "OBS - American Express Microservice"
 
 @app.route("/getStockPrice",)
 def price():
-	return {"axp_price": get_price()}
+	return {"stock_price": get_price()}
 
 @app.route("/getUserHoldings/<userID>",)
 def userHoldings(userID):
@@ -73,21 +84,25 @@ def obsHoldings():
 
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):
-	obs_position = obs_holdings()['shares']
+	obs_position = int(obs_holdings()['shares'])
+	action=u"buy"
 	if amount >= obs_position:
 		update_obs_holdings(5000)
 	else:
 		update_obs_holdings(obs_position - amount)
 	updates_user_holdings(userID,amount)
+	log_action(userID,amount,action)
 	return {"testing": obs_holdings()['shares']}
 
 @app.route("/sell/<userID>/<int:amount>")
 def sell(userID, amount):
-	obs_position = obs_holdings()['shares']
-	user_position = user_holdings(userID)['shares']
+	obs_position = int(obs_holdings()['shares'])
+	user_position = int(user_holdings(userID)['shares'])
+	action=u"sell"
 	if amount > user_holdings:
 		return 'Error: insufficient user inventory.'
 	else:
+		log_action(userID,amount,action)
 		return {
 			"user": userID,
 			"shares": amount
