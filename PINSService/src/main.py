@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
@@ -10,8 +10,6 @@ db = firestore.Client.from_service_account_json('/Users/Sydney/Desktop/cis4930-f
 app = Flask(__name__)
 
 
-
-
 def getPriceFromTradier():
     try:
         response = requests.get('https://sandbox.tradier.com/v1/markets/quotes',
@@ -19,23 +17,26 @@ def getPriceFromTradier():
                                 headers={'Authorization': 'Bearer uZOWMJ0Hh2jcz2g9GE2Xa9YNPhMC', 'Accept': 'application/json'})
     except requests.exceptions.RequestException as e:
         print("Get stock price request error: ", e)
-        
+            
     resp_json = response.json()
     lastPrice = resp_json["quotes"]["quote"]["last"]
     return lastPrice
 
 def getUserHoldingsDb(userID):
     doc_ref = db.collection(u'UserHoldings_PINS').document(userID)
-    try:
-        doc = doc_ref.get()
-        print("doc.to_dict()['stock_amnt'] ", doc.to_dict()['stock_amnt'])
-        return  doc.to_dict()
-    except TypeError:
-        return {"stock_amnt" : 0}
+ 
+    doc = doc_ref.get() 
+    
+    if doc.exists:
+        return  doc.to_dict() 
+    else:
+        return {"shares" : 0}
+  
+
 
 def updateUserHoldingsDb(userID, amnt, action):
 
-    currStocks = getUserHoldingsDb(userID)['stock_amnt']
+    currStocks = getUserHoldingsDb(userID)['shares']
     if action == "buy":
         updatedStocks = currStocks + amnt
     else:
@@ -43,21 +44,21 @@ def updateUserHoldingsDb(userID, amnt, action):
  
     doc_ref = db.collection(u'UserHoldings_PINS').document(userID)
     doc_ref = doc_ref.set({
-            u'stock_amnt': updatedStocks
+            u'shares': updatedStocks
             })
     return 1
 
 def obsGetAvailableStocks():
     doc_ref = db.collection(u'OBS_holdings').document('FGABKyqIk71Fn8e1n94j')
-    try:
-        doc = doc_ref.get()
-        return doc.to_dict()
-    except TypeError:
-        return {"total_stocks" : 0}
+    doc = doc_ref.get() 
+    if doc.exists:
+        return  doc.to_dict() 
+    else:
+        return {"shares" : 0}
    
 def obsUpdateStockHoldings(amount, action):
     # add or sell additional stocks
-    currStocks = obsGetAvailableStocks()['total_stocks']
+    currStocks = obsGetAvailableStocks()['shares']
     print("current ",currStocks)
     if action == "buy":
         updatedStocks = currStocks + amount
@@ -66,16 +67,17 @@ def obsUpdateStockHoldings(amount, action):
     
     doc_ref = db.collection(u'OBS_holdings').document('FGABKyqIk71Fn8e1n94j')
     doc_ref = doc_ref.set({
-            u'total_stocks': updatedStocks,
+            u'shares': updatedStocks,
             })
             
     return 1
 
 
 
+
 @app.route("/",) 
 def index():
-    return "Welcome to Python Server"
+    return "Welcome to OBS Pinterest Service"
 
 @app.route("/getStockPrice",)
 def getStockPrice():
@@ -90,13 +92,12 @@ def getUser(userID):
 @app.route("/getOBSHoldings",) 
 def getOBS():
     result =  obsGetAvailableStocks()
-    return result
+    return result 
 
 @app.route("/buy/<userID>/<int:amount>")
 def buyStocks(userID, amount):
     #check bank holdings
-    bankholdings = obsGetAvailableStocks()['total_stocks']
-    print("bankholdings ", bankholdings)
+    bankholdings = obsGetAvailableStocks()['shares']
     if amount > bankholdings:
         amntNeeded = amount - bankholdings 
         obsUpdateStockHoldings((amntNeeded + 5000), "buy")
@@ -104,18 +105,19 @@ def buyStocks(userID, amount):
     obsUpdateStockHoldings(amount, "sell")
     # user buys stock
     updateUserHoldingsDb(userID, amount, "buy")
-    return "bought stocks"
+    
+    return { "obs_shares": obsGetAvailableStocks()['shares'], "user_shares": getUserHoldingsDb(userID)['shares'] }
 
 @app.route("/sell/<userID>/<int:amount>")
 def sellStocks(userID, amount):    
-    holdings = getUserHoldingsDb(userID)['stock_amnt']
+    holdings = getUserHoldingsDb(userID)['shares']
     if amount > holdings:
         return "Sorry you do not own enough stocks to sell that amount."
     # bank buys stock from user
     obsUpdateStockHoldings(amount,"buy")
     # user sells stock to bank
     updateUserHoldingsDb(userID, amount, "sell")
-    return "sold stocks"
+    return { "obs_shares": obsGetAvailableStocks()['shares'], "user_shares": getUserHoldingsDb(userID)['shares'] }
 
 if __name__ == "__main__":
     app.run(debug=True)

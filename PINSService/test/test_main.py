@@ -5,7 +5,7 @@ from src.main import app
 import requests
 import json
 from unittest.mock import patch
-
+from src.main import getPriceFromTradier, db, obsGetAvailableStocks
 
 
 
@@ -44,7 +44,7 @@ def test_home_page(test_client):
     """
     response = test_client.get('/')
     assert response.status_code == 200
-    assert b"Welcome to Python Server" in response.data
+    assert b"Welcome to OBS Pinterest Service" in response.data
     
     
 def test_get_stock_price(test_client):
@@ -58,23 +58,87 @@ def test_get_stock_price(test_client):
     
     assert response.status_code == 200
     assert expectedPrice == json.loads( response.data )['stock_price']
+    
+def test_get_stock_price_helper(test_client):
+    assert getStockPrice() == getPriceFromTradier()
+    
+
      
 @patch('src.main.obsGetAvailableStocks')
 def test_get_obs_holdings(mock_obsGetAvailableStocks, test_client):
    
-    mock_obsGetAvailableStocks.return_value = { "total_stocks": 5000 }
+    mock_obsGetAvailableStocks.return_value = { "shares": 5000 }
     response = test_client.get('/getOBSHoldings')    
     assert response.status_code == 200
-    assert (json.loads(response.data)['total_stocks']) == 5000
     
 
 @patch('src.main.getUserHoldingsDb')
 def test_get_user_holdings(mock_getUserHoldingsDb, test_client):
 
-    mock_getUserHoldingsDb.return_value = { "stock_amnt": 10 }
+    mock_getUserHoldingsDb.return_value = { "shares": 10 }
     response = test_client.get('/getUserHoldings/test')    
     assert response.status_code == 200
-    assert (json.loads(response.data)["stock_amnt"]) == 10
+    assert (json.loads(response.data)["shares"]) == 10
+    
+@patch('src.main.obsUpdateStockHoldings')
+@patch('src.main.updateUserHoldingsDb') 
+def test_user_buy_stock(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+ 
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_obsUpdateStockHoldings.return_value = 0
+    response = test_client.get('/buy/test/100')    
+    assert response.status_code == 200
+
+    
+@patch('src.main.obsUpdateStockHoldings')
+@patch('src.main.updateUserHoldingsDb') 
+def test_user_sell_holdings(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value =0
+    response = test_client.get('/sell/test/100')    
+    assert response.status_code == 200
+    
+@patch('src.main.obsUpdateStockHoldings')
+@patch('src.main.updateUserHoldingsDb') 
+def test_user_cannot_sell_more_than_holdings(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+    test_holdings = test_client.get('/getUserHoldings/test') 
+    prev_stocks = json.loads(test_holdings.data)['shares']
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value =0
+    response = test_client.get('/sell/test/'+str(prev_stocks+100))    
+    assert response.status_code == 200
+    assert b"Sorry you do not own enough stocks to sell that amount." in response.data
+
+    
+@patch('src.main.obsUpdateStockHoldings')
+@patch('src.main.updateUserHoldingsDb') 
+def test_user_sells_all_holdings(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+
+    test_holdings = test_client.get('/getUserHoldings/test')  
+    prev_stocks = json.loads(test_holdings.data)['shares']
+    
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value =0
+    response = test_client.get('/sell/test/'+str(prev_stocks))    
+    assert response.status_code == 200
+    assert b"Sorry you do not own enough stocks to sell that amount." not in response.data
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
