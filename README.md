@@ -16,3 +16,6 @@ The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrasc
 
 ### Firebase Authentication
 To run the signup/login script in obs-auth branch: `python obs.py`
+
+### Coverage Reports
+![UBER coverage report](https://github.com/APrascak/cis4930-final/blob/uber/uber-coverage-report.png?raw=true)
