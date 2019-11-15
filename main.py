@@ -50,7 +50,7 @@ def update_obs_holdings(amount):
 	except:
 		return False
 
-def updates_user_holdings(userID, amount):
+def update_user_holdings(userID, amount):
 	ref = db.collection('user-shares').document(userID)
 	current_holdings = ref.get().to_dict()['shares']
 	try:
@@ -90,11 +90,11 @@ def buy(userID,amount):
 	action = u"buy"
 	if amount >= obs_position:
 		update_obs_holdings(5000)
-		updates_user_holdings(userID,amount)
+		update_user_holdings(userID,amount)
 		log_action(userID,amount,action)
 	else:
 		update_obs_holdings(obs_position - amount)
-		updates_user_holdings(userID,amount)
+		update_user_holdings(userID,amount)
 		log_action(userID,amount,action)
 	return {
 		"obs_shares": obs_holdings()['shares'],
@@ -111,7 +111,7 @@ def sell(userID, amount):
 	else:
 		# Add sale implementation
 		update_obs_holdings(obs_position + amount)
-		updates_user_holdings(userID,amount * -1)
+		update_user_holdings(userID,amount * -1)
 		log_action(userID,amount,action)
 		return {
 			"obs_shares": obs_holdings()['shares'],
