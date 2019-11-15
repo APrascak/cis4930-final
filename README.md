@@ -5,11 +5,9 @@
 * Ganna Voytseshko
 * Nozomi Watanabe
 
-### API Documentation
-You can find the Swagger Documentation [here.](https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0)
-
 ### Microservices
-Individual implementations in respective branches.
+Individual implementations in respective branches.  
+The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0)  
 * American Express:  
 * Pinterest: http://pinterestservice.appspot.com/  
 * Raytheon:  
