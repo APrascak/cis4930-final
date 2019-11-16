@@ -99,7 +99,7 @@ def sell(userID, amount):
 	obs_position = int(obs_holdings()['shares'])
 	user_position = int(user_holdings(userID)['shares'])
 	action=u"sell"
-	if amount > user_holdings:
+	if amount > user_position:
 		return 'Error: insufficient user inventory.'
 	else:
 		log_action(userID,amount,action)

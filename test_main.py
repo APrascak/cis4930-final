@@ -1,10 +1,20 @@
 # tests for Pinterest Stock Service
 # to run tests use terminal, cd into test directory, use command 'py.test'
+# import pytest
+# from main import app
+# import requests
+# import json
+# from unittest.mock import Mock
+# from unittest.mock import patch
+# from main import get_price, update_obs_holdings, updates_user_holdings
+
 import pytest
 from main import app
 import requests
 import json
-from unittest.mock import patch
+import mock
+from mock import patch
+from main import get_price, update_obs_holdings, updates_user_holdings
 
 
 @pytest.fixture(scope='module')
@@ -56,8 +66,11 @@ def test_get_stock_price(test_client):
     
     assert response.status_code == 200
     assert expectedPrice == json.loads( response.data )['stock_price']
+
+def test_get_stock_price_helper(test_client):
+    assert getStockPrice() == get_price()
      
-@patch('src.main.obs_holdings')
+@patch('main.obs_holdings')
 def test_get_obs_holdings(mock_obsGetAvailableStocks, test_client):
    
     mock_obsGetAvailableStocks.return_value = { "shares": 5000 }
@@ -73,3 +86,58 @@ def test_get_user_holdings(mock_user_holdings, test_client):
     response = test_client.get('/getUserHoldings/test')    
     assert response.status_code == 200
     assert (json.loads(response.data)["user_shares"]) == 10
+
+@patch('main.update_obs_holdings')
+def test_update_obs_holdings(mock_update_obs_holdings, test_client):
+    mock_update_obs_holdings.return_value = 0
+    response = test_client.get('/buy/test/10')
+    assert response.status_code == 200
+
+@patch('main.update_obs_holdings')
+@patch('main.updates_user_holdings') 
+def test_user_buy_holdings(mock_update_obs_holdings, mock_updates_user_holdings, test_client):
+    mock_update_obs_holdings.return_value = 0
+    mock_updates_user_holdings.return_value = 0
+    response = test_client.get('/buy/test/10')    
+    assert response.status_code == 200
+
+@patch('main.update_obs_holdings')
+@patch('main.updates_user_holdings') 
+def test_user_buy_holdings_a_lot_of_stocks(mock_update_obs_holdings, mock_updates_user_holdings, test_client):
+    mock_update_obs_holdings.return_value = 0
+    mock_updates_user_holdings.return_value = 0
+    response = test_client.get('/buy/test/10000')    
+    assert response.status_code == 200
+
+@patch('main.update_obs_holdings')
+@patch('main.updates_user_holdings') 
+def test_user_sell_holdings(mock_update_obs_holdings, mock_updates_user_holdings, test_client):
+    mock_update_obs_holdings.return_value = 0
+    mock_updates_user_holdings.return_value = 0
+    response = test_client.get('/sell/test/10')    
+    assert response.status_code == 200
+    
+@patch('main.update_obs_holdings')
+@patch('main.updates_user_holdings') 
+def test_user_cannot_sell_more_than_holdings(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+    test_holdings = test_client.get('/getUserHoldings/test') 
+    prev_stocks = int(json.loads(test_holdings.data)['user_shares'])
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value =0
+    response = test_client.get('/sell/test/'+str(prev_stocks+100))    
+    assert response.status_code == 200
+    assert b"Error: insufficient user inventory." in response.data
+
+    
+@patch('main.update_obs_holdings')
+@patch('main.updates_user_holdings') 
+def test_user_sells_all_holdings(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+
+    test_holdings = test_client.get('/getUserHoldings/test')  
+    prev_stocks = int(json.loads(test_holdings.data)['user_shares'])
+    
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value =0
+    response = test_client.get('/sell/test/'+str(prev_stocks))    
+    assert response.status_code == 200
+    assert b"Error: insufficient user inventory." not in response.data
