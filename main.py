@@ -1,4 +1,5 @@
 import requests
+import json
 from flask import Flask
 from firebase import firebase
 from datetime import datetime
@@ -94,7 +95,9 @@ def buyStock(token, amount):
         DBConn.put('/Central/Bank/'+entry, 'Stock', newAmount)
     # Updating Central Logging Database - User Funds
     userFunds(token, current_time, totalPrice)
-    return(str(result))
+    r = json.dumps(result)
+    loaded_r = json.loads(r)
+    return(loaded_r)
 
 
 @app.route('/sellStock/<int:token>/<int:amount>',)
@@ -122,7 +125,9 @@ def sellStock(token, amount):
         DBConn.put('/Central/Bank/'+entry, 'Stock', newAmount)
     # Updating Central Logging Database - User Funds
     userFunds(token, current_time, -totalPrice)
-    return(str(result))
+    r = json.dumps(result)
+    loaded_r = json.loads(r)
+    return(loaded_r)
 
 
 if(__name__) == "__main__":
