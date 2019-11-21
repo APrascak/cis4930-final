@@ -112,12 +112,12 @@ def updateUserStocks(token, amount):
 	
 	#First log this transaction.
 	db = establish_connection_with_db()
-	query = "INSERT INTO logs(token, action, amount, time) VALUES (%s, %s, %s, %s)"
+	query = "INSERT INTO logs(token, action, amount, price, time) VALUES (%s, %s, %s, %s, %s)"
 	#This is a sell
 	if amount < 0:
-		query_db(db, query, (token, "sell", abs(amount), timestamp))
+		query_db(db, query, (token, "sell", abs(amount), price, timestamp))
 	else:#Buy
-		query_db(db, query, (token, "buy", abs(amount), timestamp))
+		query_db(db, query, (token, "buy", abs(amount), price, timestamp))
 	
 	currentStocks = getUserStocks(token)
 	currentBalance = getUserBalance(token)
@@ -264,6 +264,10 @@ def createApp():
 	def getBankStocks():
 		return jsonify({'shares': getUserStocks('adminToken1337')})
 	
+	@foo.route('/getOBSPL', methods = ['GET'])
+	def getBankPL():
+		return jsonify({'pl': getUserBalance('adminToken1337')})
+	
 	@foo.route('/getOBSLogs')
 	def adminLogs():#pragma: no cover
 		#Connect to database, only get things that have token = admin and get a list of all of the transaction logs
@@ -283,6 +287,6 @@ if __name__ == '__main__':#pragma: no cover
 
 #curl -d '{"token": "sampleUser"}' -H "Content-Type: application/json" -X POST http://localhost:8080/addUser
 
-#When deployed: curl -d '{"token": "foo"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
+#When deployed: curl -d '{"token": "sampleUser"}' -H "Content-Type: application/json" -X POST http://sonorous-bounty-258117.appspot.com/getStockPrice
 
 #curl -X GET -H "Content-Type: application/json" -d '{"userID": "sampleUser"}' http://sonorous-bounty-258117.appspot.com/getUserHoldings

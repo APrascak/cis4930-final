@@ -9,6 +9,8 @@ def test_getPrice(mocker):
 	val = getPrice()
 	assert val == '1234'
 
+	
+
 def test_db(mocker):
 	mocker.patch('mysql.connector.connect', return_value=True)
 	assert establish_connection_with_db() == True
@@ -27,7 +29,7 @@ def getStockPrice_client(mocker):
 	
 	yield testing_client
 	ctx.pop()
-	
+
 	
 #Check 
 def test_getStockPrice_status(getStockPrice_client):
@@ -73,6 +75,12 @@ def test_getOBSStocks_func(getUserStocks_client):
 	data = json.loads(response.data)
 	assert data['shares'] == 4242
 	
+
+def test_getOBSPL_func(getUserStocks_client):
+	response = getUserStocks_client.get('/getOBSPL')
+	assert response.status_code == 200
+	data = json.loads(response.data)
+	assert data['pl'] == 13.37
 	
 @pytest.fixture
 def buy_client(mocker):
@@ -142,6 +150,9 @@ def test_getBalance(mocker):
 	balance = getUserBalance('testUser')
 	assert balance == 13.37
 	
+#This test needs to be rewritten once we figure out how to mock all of our actual functions, couldn't really figure it out
+#We actually want to check if it's calling the get and query using the correct parameters.
+
 def test_update_raw(mocker):
 	mocker.patch('time.time', return_value = 1573792012)
 	
