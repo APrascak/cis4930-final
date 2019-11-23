@@ -1,9 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import Navigation from '../Navigation';
-const Home = () => (
-    <div>
-    <h1>Home</h1>
+import { withAuthorization } from '../Session';
+const HomePage = () => (
+  <div>
+    <h1>Home Page</h1>
+    <p>The Home Page is accessible by every signed in user.</p>
   </div>
 );
-export default Home;
+const condition = authUser => !!authUser;
+export default withAuthorization(condition)(HomePage);
