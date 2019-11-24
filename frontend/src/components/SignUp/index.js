@@ -58,6 +58,7 @@ class SignUpFormBase extends Component {
     const isInvalid =
       passwordOne !== passwordTwo ||
       passwordOne === '' ||
+      passwordOne.length < 8 ||
       email === '' ||
       username === '';
 
