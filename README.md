@@ -22,3 +22,4 @@ To run the signup/login script in obs-auth branch: `python obs.py`
 ![AMERICAN EXPRESS coverage report](https://github.com/APrascak/cis4930-final/blob/AmericanExpress/AXP-Coverage.PNG)
 ![RAYTHEON coverage report](https://github.com/APrascak/cis4930-final/blob/raytheon/coverage.png)
 ![PINTEREST coverage report](https://github.com/APrascak/cis4930-final/blob/master/Pinterest-Coverage.png)
+![image](https://user-images.githubusercontent.com/42813401/69832779-1c287400-11fe-11ea-8f8e-278bafe2786a.png)
