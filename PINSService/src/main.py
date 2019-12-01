@@ -6,10 +6,11 @@ from google.cloud import firestore
 import requests
 from flask import Flask
 import datetime
+from flask_cors import CORS
 
 db = firestore.Client.from_service_account_json('pinterestservice-firebase-adminsdk-6ubsp-9e03db19db.json')
 app = Flask(__name__)
-
+CORS(app)
 
 def getPriceFromTradier():
     try:

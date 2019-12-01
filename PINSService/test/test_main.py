@@ -79,6 +79,12 @@ def test_get_user_holdings(mock_getUserHoldingsDb, test_client):
     response = test_client.get('/getUserHoldings/test')    
     assert response.status_code == 200
     assert (json.loads(response.data)["shares"]) == 10
+ 
+@patch('src.main.obsUpdateStockHoldings')
+def test_update_obs_holdings(mock_obsUpdateStockHoldings, test_client):
+    mock_obsUpdateStockHoldings.return_value = 0
+    response = test_client.get('/buy/test/10')
+    assert response.status_code == 200
     
 @patch('src.main.obsUpdateStockHoldings')
 @patch('src.main.updateUserHoldingsDb') 
@@ -89,6 +95,13 @@ def test_user_buy_stock(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, 
     response = test_client.get('/buy/test/100')    
     assert response.status_code == 200
 
+@patch('src.main.obsUpdateStockHoldings')
+@patch('src.main.updateUserHoldingsDb') 
+def test_user_buy_holdings_a_lot_of_stocks(mock_obsUpdateStockHoldings, mock_updateUserHoldingsDb, test_client):
+    mock_obsUpdateStockHoldings.return_value = 0
+    mock_updateUserHoldingsDb.return_value = 0
+    response = test_client.get('/buy/test/10000')    
+    assert response.status_code == 200
     
 @patch('src.main.obsUpdateStockHoldings')
 @patch('src.main.updateUserHoldingsDb') 
