@@ -4,3 +4,4 @@ requests==2.7.0
 google.cloud
 google.cloud.firestore
 google
+flask-cors
