@@ -4,7 +4,7 @@ const StockAccountPage = props => (
   <AuthUserContext.Consumer>
     {authUser => (
       <div>
-        <h1>Stock account number: {props.data}</h1>
+        <h1>Stock account number: {props.accountId}</h1>
       </div>
     )}
   </AuthUserContext.Consumer>
