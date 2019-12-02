@@ -4,10 +4,23 @@ import StockAccount from '../StockAcount';
 import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 
-
-const AccountPage = () => {
+function buyStocks(user, amnt){
+    console.log(amnt);
+    axios
+          .post('https://pinterestservice.appspot.com/buy', {
+            userID: user,
+            amount: amnt
+           })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+}
+const AccountPage = (props) => {
     const [price, setPrice] = useState( [] );
-    
+    const [pinsAmnt, setPinsAmnt] = useState( [] );
     useEffect(() => {
         axios
           .get("https://pinterestservice.appspot.com/getStockPrice", {
@@ -16,20 +29,41 @@ const AccountPage = () => {
           .then(response => setPrice(response.data.stock_price))
           .catch(error => console.log(error));
       }, []);
+    useEffect(() => {
+        axios
+          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.firebase.auth.currentUser.email, {
+            method: 'GET',
+           })
+          .then(response => setPinsAmnt(response.data.shares))
+          .catch(error => console.log(error));
+    }, []);
 
-    
+    const [inputs, setInputs] = useState({});
+    const handleSubmit = (event) => {
+        if (event) {
+          console.log("submit : ",inputs)
+          event.preventDefault();
+        }
+        buyStocks();
+    }
+    const handleInputChange = (event) => {
+        event.persist();
+        setInputs(inputs => ({...inputs, [event.target.name]: event.target.value}));
+    }
 
     return(
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-<h1>Account: {authUser.email} </h1>
+                <h1>Account: {authUser.uid}  </h1>
                 <h1>Pinterest Stock Price: {price} </h1>
+                <h1>Pinterest Stock Amount: {pinsAmnt} </h1>
+                <form onSubmit = {handleSubmit} >
+                    Buy Stocks
+                    <input onChange={handleInputChange} value={inputs.buyAmnt} type="number" name="buyAmnt" min="1" />
+                    <input type="submit" />
+                </form>
                 <StockAccount data="1"/>
-                <StockAccount data="2"/>
-                <StockAccount data="3"/>
-                <StockAccount data="4"/>
-                <StockAccount data="5"/>
             </div>
             )}
         </AuthUserContext.Consumer>
