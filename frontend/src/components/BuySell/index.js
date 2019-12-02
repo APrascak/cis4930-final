@@ -7,10 +7,7 @@ import axios from 'axios';
 function buyStocks(user, amnt){
     console.log(amnt);
     axios
-          .post('https://pinterestservice.appspot.com/buy', {
-            userID: user,
-            amount: amnt
-           })
+          .get('https://pinterestservice.appspot.com/buy/' + user+ "/"+amnt )
           .then(function (response) {
             console.log(response);
           })
@@ -18,6 +15,7 @@ function buyStocks(user, amnt){
             console.log(error);
           });
 }
+
 const AccountPage = (props) => {
     const [price, setPrice] = useState( [] );
     const [pinsAmnt, setPinsAmnt] = useState( [] );
@@ -29,9 +27,10 @@ const AccountPage = (props) => {
           .then(response => setPrice(response.data.stock_price))
           .catch(error => console.log(error));
       }, []);
+
     useEffect(() => {
         axios
-          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.firebase.auth.currentUser.email, {
+          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.firebase.auth.currentUser.uid, {
             method: 'GET',
            })
           .then(response => setPinsAmnt(response.data.shares))
@@ -44,8 +43,9 @@ const AccountPage = (props) => {
           console.log("submit : ",inputs)
           event.preventDefault();
         }
-        buyStocks();
+        buyStocks( props.firebase.auth.currentUser.uid, inputs.buyAmnt);
     }
+
     const handleInputChange = (event) => {
         event.persist();
         setInputs(inputs => ({...inputs, [event.target.name]: event.target.value}));
