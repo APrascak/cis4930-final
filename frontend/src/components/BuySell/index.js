@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import StockAccount from '../StockAcount';
 import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 
@@ -16,7 +15,7 @@ function buyStocks(user, amnt){
           });
 }
 
-const AccountPage = (props) => {
+const BuySell = (props) => {
     const [price, setPrice] = useState( [] );
     const [pinsAmnt, setPinsAmnt] = useState( [] );
     useEffect(() => {
@@ -30,7 +29,7 @@ const AccountPage = (props) => {
 
     useEffect(() => {
         axios
-          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.firebase.auth.currentUser.uid, {
+          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.accountId, {
             method: 'GET',
            })
           .then(response => setPinsAmnt(response.data.shares))
@@ -43,7 +42,7 @@ const AccountPage = (props) => {
           console.log("submit : ",inputs)
           event.preventDefault();
         }
-        buyStocks( props.firebase.auth.currentUser.uid, inputs.buyAmnt);
+        buyStocks( props.accountId, inputs.buyAmnt);
     }
 
     const handleInputChange = (event) => {
@@ -55,19 +54,16 @@ const AccountPage = (props) => {
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h1>Account: {authUser.uid}  </h1>
-                <h1>Pinterest Stock Price: {price} </h1>
-                <h1>Pinterest Stock Amount: {pinsAmnt} </h1>
+                <h1>Pinterest Stock Amount: {pinsAmnt} , stock value = {price} </h1>
                 <form onSubmit = {handleSubmit} >
                     Buy Stocks
                     <input onChange={handleInputChange} value={inputs.buyAmnt} type="number" name="buyAmnt" min="1" />
                     <input type="submit" />
                 </form>
-                <StockAccount data="1"/>
             </div>
             )}
         </AuthUserContext.Consumer>
     )
 };
 const condition = authUser => !!authUser;
-export default withAuthorization(condition)(AccountPage);
+export default withAuthorization(condition)(BuySell);

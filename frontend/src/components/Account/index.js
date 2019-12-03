@@ -1,3 +1,4 @@
+  
 import React from 'react';
 import { PasswordForgetForm } from '../PasswordForget';
 import PasswordChangeForm from '../PasswordChange';
@@ -8,13 +9,16 @@ const AccountPage = () => (
     {authUser => (
       <div>
         <h1>Account: {authUser.email}</h1>
+        <h1>Account: {authUser.uid}</h1>
         <PasswordForgetForm />
         <PasswordChangeForm />
-        <StockAccount data="1"/>
-        <StockAccount data="2"/>
-        <StockAccount data="3"/>
-        <StockAccount data="4"/>
-        <StockAccount data="5"/>
+        <br/>
+        <hr/>       
+        <StockAccount accountId={authUser.uid + "one"}/>
+        <hr/>       
+        <StockAccount accountId={authUser.uid + "two"}/>
+        <hr/>       
+        <StockAccount accountId={authUser.uid + "three"}/>
       </div>
     )}
   </AuthUserContext.Consumer>
