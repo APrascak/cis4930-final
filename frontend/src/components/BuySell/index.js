@@ -2,47 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
+import * as stockApi from './stockApiCalls'
+import * as url from './stockApiUrls'
 
-function buyStocks(user, amnt){
-    console.log(amnt);
-    axios
-          .get('https://pinterestservice.appspot.com/buy/' + user+ "/"+amnt )
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-}
 
 const BuySell = (props) => {
-    const [price, setPrice] = useState( [] );
     const [pinsAmnt, setPinsAmnt] = useState( [] );
     useEffect(() => {
-        axios
-          .get("https://pinterestservice.appspot.com/getStockPrice", {
-            method: 'GET',
-           })
-          .then(response => setPrice(response.data.stock_price))
-          .catch(error => console.log(error));
-      }, []);
-
-    useEffect(() => {
-        axios
-          .get("https://pinterestservice.appspot.com/getUserHoldings/"+props.accountId, {
-            method: 'GET',
-           })
-          .then(response => setPinsAmnt(response.data.shares))
-          .catch(error => console.log(error));
-    }, []);
+      console.log(url.PINS)
+      stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
+    },);
 
     const [inputs, setInputs] = useState({});
     const handleSubmit = (event) => {
         if (event) {
-          console.log("submit : ",inputs)
           event.preventDefault();
         }
-        buyStocks( props.accountId, inputs.buyAmnt);
+        stockApi.buyStocks(url.PINS,props.accountId, inputs.buyAmnt);
     }
 
     const handleInputChange = (event) => {
@@ -54,7 +30,7 @@ const BuySell = (props) => {
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h1>Pinterest Stock Amount: {pinsAmnt} , stock value = {price} </h1>
+                <h1>Pinterest Stock Amount: {pinsAmnt}  </h1>
                 <form onSubmit = {handleSubmit} >
                     Buy Stocks
                     <input onChange={handleInputChange} value={inputs.buyAmnt} type="number" name="buyAmnt" min="1" />
