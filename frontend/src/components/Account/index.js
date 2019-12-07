@@ -3,6 +3,8 @@ import { PasswordForgetForm } from '../PasswordForget';
 import PasswordChangeForm from '../PasswordChange';
 import StockAccount from '../StockAcount';
 import { AuthUserContext, withAuthorization } from '../Session';
+
+import UserList from '../UserList';
 const AccountPage = () => (
   <AuthUserContext.Consumer>
     {authUser => (
@@ -14,6 +16,7 @@ const AccountPage = () => (
         <StockAccount accountId={authUser.uid + "one"}/>
         <StockAccount accountId={authUser.uid + "two"}/>
         <StockAccount accountId={authUser.uid + "three"}/>
+        <UserList></UserList>
       </div>
     )}
   </AuthUserContext.Consumer>
