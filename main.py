@@ -3,6 +3,7 @@
 
 from flask import Flask
 from google.cloud import firestore
+from flask_cors import CORS
 import requests
 import json
 import datetime
@@ -10,6 +11,8 @@ import datetime
 
 app = Flask(__name__)
 db = firestore.Client.from_service_account_json('uber-stock-microservice-firebase-adminsdk-vzk11-6813665ba9.json')
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Returns: current Uber stock price.
 def get_price():
