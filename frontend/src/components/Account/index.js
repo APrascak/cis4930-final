@@ -16,7 +16,6 @@ const AccountPage = () => (
         <StockAccount accountId={authUser.uid + "one"}/>
         <StockAccount accountId={authUser.uid + "two"}/>
         <StockAccount accountId={authUser.uid + "three"}/>
-        <UserList></UserList>
       </div>
     )}
   </AuthUserContext.Consumer>
