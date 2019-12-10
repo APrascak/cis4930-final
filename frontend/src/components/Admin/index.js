@@ -31,7 +31,10 @@ class AdminDashboardBase extends Component {
           ]
         }
         snapshot.forEach(doc => {
-          logData.Logs.push(doc.data()) // Adds individual documents to logData
+          var info = doc.data()
+          info['TimeStamp'] = doc.id
+          console.log(info)
+          logData.Logs.push(info) // Adds individual documents to logData
         })
         this.setState({ logData }) // Sets state with queried results
       })

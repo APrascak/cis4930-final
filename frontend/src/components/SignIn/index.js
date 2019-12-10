@@ -28,17 +28,28 @@ class SignInFormBase extends Component {
     this.props.firebase
       .doSignInWithEmailAndPassword(email, password)
       .then(() => {
-        var currentdate = new Date(); 
-        var datetime = currentdate.getDate() + "/"
-                        + (currentdate.getMonth()+1)  + "/" 
+        var currentdate = new Date();
+        var datetime = currentdate.getDate() + "-"
+                        + (currentdate.getMonth()+1)  + "-" 
                         + currentdate.getFullYear() + " @ "  
-                        + currentdate.getHours() + ":"  
-                        + currentdate.getMinutes() + ":" 
-                        + currentdate.getSeconds();
-        this.props.firebase.db.collection('admin-logs').add({
-          "Action": "Login",
-          "Email": email,
-          "TimeStamp": datetime
+        if (currentdate.getHours() < 10) {
+          datetime += "0" + currentdate.getHours() + ":"
+        } else {
+          datetime += currentdate.getHours() + ":"
+        }
+        if (currentdate.getMinutes() < 10) {
+          datetime += "0" + currentdate.getMinutes() + ":"
+        } else {
+          datetime += currentdate.getMinutes() + ":"
+        }
+        if (currentdate.getSeconds() < 10) {
+          datetime += "0" + currentdate.getSeconds()
+        } else {
+          datetime += + currentdate.getSeconds()
+        }
+        this.props.firebase.db.collection('admin-logs').doc(datetime.toString()).set({
+          "Action": "Sign In",
+          "Email": email
         })
         this.setState({ ...INITIAL_STATE });
         this.props.history.push(ROUTES.HOME);
