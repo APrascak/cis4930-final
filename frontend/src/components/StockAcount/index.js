@@ -62,7 +62,7 @@ class StockAccountPage extends Component {
     const hasStockAccount = this.state.hasStockAccount;
     let createStockAccount;
     if(hasStockAccount){
-      createStockAccount = <div><BuySell accountId={props.accountId}/></div>;
+      createStockAccount = <div><BuySell accountId={this.props.accountId}/></div>;
     }
     else{
       createStockAccount = <CreateStockAccount accountId={this.props.accountId}></CreateStockAccount>;
