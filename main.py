@@ -27,7 +27,10 @@ def user_holdings(userID):
 	ref = db.collection('user-shares').document(userID)
 	try:
 		doc = ref.get()
-		return {"shares": (doc.to_dict()['shares'])}
+		if doc.exists:
+			return {"shares": (doc.to_dict()['shares'])}
+		else:
+			return {"shares" : 0}
 	except:
 		return 'Error.'
 
@@ -35,7 +38,10 @@ def obs_holdings():
 	ref = db.collection('obs').document("axp")
 	try:
 		doc = ref.get()
-		return {"shares": (doc.to_dict()['shares'])}
+		if doc.exists:
+			return {"shares": (doc.to_dict()['shares'])}
+		else:
+			return {"shares" : 0}
 	except:
 		return 'Error'
 
@@ -78,11 +84,11 @@ def price():
 
 @app.route("/getUserHoldings/<userID>",)
 def userHoldings(userID):
-	return {"user_shares": user_holdings(userID)['shares']}
+	return {"shares": user_holdings(userID)['shares']}
 
 @app.route("/getOBSHoldings",)
 def obsHoldings():
-	return {"obs_shares": obs_holdings()['shares']}
+	return {"shares": obs_holdings()['shares']}
 
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):

@@ -65,11 +65,11 @@ def price():
 
 @app.route("/getUserHoldings/<userID>",)
 def userHoldings(userID):
-	return {"user_shares": user_holdings(userID)['shares']}
+	return {"shares": user_holdings(userID)['shares']}
 
 @app.route("/getOBSHoldings",)
 def obsHoldings():
-	return {"obs_shares": obs_holdings()['shares']}
+	return {"shares": obs_holdings()['shares']}
 
 @app.route("/buy/<userID>/<int:amount>")
 def buy(userID,amount):
