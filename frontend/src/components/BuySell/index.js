@@ -6,6 +6,7 @@ import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
 import Test from './test'
+import AddFunds from '../AddFunds';
 
 const BuySell = (props) => {
     const [pinsAmnt, setPinsAmnt] = useState( [] );
@@ -62,6 +63,9 @@ const BuySell = (props) => {
                     <input type="submit" />
                 </form>
                 <Test amount = {pinsAmnt} />
+
+				<AddFunds money={props.money} accountId = {props.accountId}></AddFunds>
+
             </div>
             )}
         </AuthUserContext.Consumer>

@@ -32,6 +32,29 @@ class SignUpFormBase extends Component {
     this.props.firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(authUser => {
+        var currentdate = new Date();
+        var datetime = currentdate.getDate() + "-"
+                        + (currentdate.getMonth()+1)  + "-" 
+                        + currentdate.getFullYear() + " @ "  
+        if (currentdate.getHours() < 10) {
+          datetime += "0" + currentdate.getHours() + ":"
+        } else {
+          datetime += currentdate.getHours() + ":"
+        }
+        if (currentdate.getMinutes() < 10) {
+          datetime += "0" + currentdate.getMinutes() + ":"
+        } else {
+          datetime += currentdate.getMinutes() + ":"
+        }
+        if (currentdate.getSeconds() < 10) {
+          datetime += "0" + currentdate.getSeconds()
+        } else {
+          datetime += + currentdate.getSeconds()
+        }
+        this.props.firebase.db.collection('admin-logs').doc(datetime.toString()).set({
+          "Action": "Register",
+          "Email": email
+        })
         this.setState({ ...INITIAL_STATE });
         this.props.history.push(ROUTES.HOME);
       })
