@@ -1,3 +1,4 @@
+  
 import React from 'react';
 import { PasswordForgetForm } from '../PasswordForget';
 import PasswordChangeForm from '../PasswordChange';
@@ -13,8 +14,14 @@ const AccountPage = () => (
         <h1>Account: {authUser.uid}</h1>
         <PasswordForgetForm />
         <PasswordChangeForm />
+
+        <br/>
+        <hr/>       
         <StockAccount accountId={authUser.uid + "one"}/>
+        <hr/>       
         <StockAccount accountId={authUser.uid + "two"}/>
+        <hr/>       
+
         <StockAccount accountId={authUser.uid + "three"}/>
       </div>
     )}

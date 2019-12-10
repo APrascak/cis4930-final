@@ -48,7 +48,7 @@ const config = {
     doSignOut = () => this.auth.signOut();
 
     doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
-  doPasswordUpdate = password =>
+    doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
     onAuthUserListener = (next, fallback) =>

@@ -1,0 +1,1 @@
+export const PINS = 'https://pinterestservice.appspot.com';

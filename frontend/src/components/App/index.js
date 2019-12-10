@@ -8,6 +8,7 @@ import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
+import BuySellPage from '../BuySell'
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
 const App = () => (
@@ -17,6 +18,7 @@ const App = () => (
       <hr />
       <Route exact path={ROUTES.LANDING} component={LandingPage} />
       <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+      <Route path = {ROUTES.BUY_SELL} component = {BuySellPage}/>
       <Route path={ROUTES.SIGN_IN} component={SignInPage} />
       <Route
         path={ROUTES.PASSWORD_FORGET}

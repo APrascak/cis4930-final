@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { AuthUserContext, withAuthorization } from '../Session';
+import BuySell from '../BuySell'
+      
+
 import CreateStockAccount from '../CreateStockAccount';
 import UserList from '../UserList';
 import { withFirebase } from '../Firebase';
@@ -59,7 +62,7 @@ class StockAccountPage extends Component {
     const hasStockAccount = this.state.hasStockAccount;
     let createStockAccount;
     if(hasStockAccount){
-      createStockAccount = <div>STOCK ACCOUNT STUFF LIKE BUY SELL AND MONEY</div>;
+      createStockAccount = <div><BuySell accountId={props.accountId}/></div>;
     }
     else{
       createStockAccount = <CreateStockAccount accountId={this.props.accountId}></CreateStockAccount>;
