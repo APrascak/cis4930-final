@@ -4,6 +4,7 @@ import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
+import AddFunds from '../AddFunds';
 
 
 const BuySell = (props) => {
@@ -36,6 +37,7 @@ const BuySell = (props) => {
                     <input onChange={handleInputChange} value={inputs.buyAmnt} type="number" name="buyAmnt" min="1" />
                     <input type="submit" />
                 </form>
+				<AddFunds money={props.money} accountId = {props.accountId}></AddFunds>
             </div>
             )}
         </AuthUserContext.Consumer>
