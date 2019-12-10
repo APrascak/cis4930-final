@@ -5,7 +5,7 @@ import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
- 
+import Test from './test'
 
 const BuySell = (props) => {
     const [pinsAmnt, setPinsAmnt] = useState( [] );
@@ -61,6 +61,7 @@ const BuySell = (props) => {
                     <input  type="number" name="amnt" min="1" ref = {register} />
                     <input type="submit" />
                 </form>
+                <Test amount = {pinsAmnt} />
             </div>
             )}
         </AuthUserContext.Consumer>
