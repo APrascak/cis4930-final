@@ -1,30 +1,19 @@
+context('Actions', () => {
+	beforeEach(() => {
+		cy.visit('http://localhost:3000/signup')
+	})
 
-
-describe('HappyPath Test', function() {
-    it('Tests signup', function() {
-        var num = (Math.random()*10)
-        cy.visit('http://localhost:3000/signup')
-
-        cy.get('#username')
-        .type('test')
-        .should('have.value', 'test')
-
-        cy.get('#email')
-        .type(('testing'+ num + '@email.com'))
-        .should('have.value', ('testing'+ num + '@email.com'))
-
-        cy.get('#passwordOne')
-        .type('testing12')
-        .should('have.value', 'testing12')
-
-        cy.get('#passwordTwo')
-        .type('testing12')
-        .should('have.value', 'testing12')
-
-        cy.get('form').submit()
-       
-
-        cy.url().should('include', '/home')
-
-    })
+	it('Attempts to sign up a user with valid password length', () => {
+		let num = Math.round(Math.random() * 10000000)
+		cy.get('input[name="username"]').type('test user')
+        cy.get('input[name="email"]').type('test' + num + '@email.com')
+        cy.get('input[name="passwordOne"]').type('longValidPassword')
+        cy.get('input[name="passwordTwo"]').type('longValidPassword')
+        cy.get('button').should('be.enabled')
+		cy.get('form').submit()
+		
+		//Valid input should result in successful login to home panel
+		cy.location('pathname').should('eq', '/home')
+	})
 })
+

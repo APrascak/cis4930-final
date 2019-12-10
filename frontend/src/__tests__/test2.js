@@ -1,7 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import Landing from '../components/Landing';
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Landing />, div);
+it('renders landing page', () => {
+  const { getByText } = render(<Landing />);
+  expect(getByText('Landing')).toBeInTheDocument();
 });
