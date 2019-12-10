@@ -5,7 +5,6 @@ import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
-import Test from './test'
 import AddFunds from '../AddFunds';
 
 const BuySell = (props) => {
@@ -13,17 +12,18 @@ const BuySell = (props) => {
     const [axpAmnt, setAxpAmnt] = useState( [] );
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
+    const [accountUpdate, setAccountUpdate] = useState([])
 
     useEffect(() => {
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
       //stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setPinsAmnt(response));
-     // stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setPinsAmnt(response));
+      //stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setPinsAmnt(response));
       stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
     },);
 
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
-        console.log(values)
+        setAccountUpdate(values)
         if( values.action == "buy"){
             if(values.stock == "PINS"){stockApi.buyStocks(url.PINS, props.accountId, values.amnt)};
             if(values.stock == "AXP"){stockApi.buyStocks(url.AXP, props.accountId, values.amnt)};
@@ -62,9 +62,7 @@ const BuySell = (props) => {
                     <input  type="number" name="amnt" min="1" ref = {register} />
                     <input type="submit" />
                 </form>
-                <Test amount = {pinsAmnt} />
-
-				<AddFunds money={props.money} accountId = {props.accountId}></AddFunds>
+				<AddFunds accountUpdate = {accountUpdate} money={props.money} accountId = {props.accountId}></AddFunds>
 
             </div>
             )}
