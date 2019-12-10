@@ -1,4 +1,4 @@
-
+import * as url from './stockApiUrls'
 import axios from 'axios';
 
 export  function buyStocks(url, user, amnt){
@@ -10,6 +10,17 @@ export  function buyStocks(url, user, amnt){
           .catch(function (error) {
             console.log(error);
           });
+}
+
+export  function sellStocks(url, user, amnt){
+  axios
+        .get(url + '/sell/' + user+ "/"+amnt )
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
 }
 
 export  function getStockAmnt(url, user) {

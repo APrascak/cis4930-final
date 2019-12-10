@@ -1,49 +1,64 @@
 
 import React, { useState, useEffect } from 'react';
+import useForm from 'react-hook-form'
 import { AuthUserContext, withAuthorization } from '../Session';
 import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
-
+ 
 
 const BuySell = (props) => {
     const [pinsAmnt, setPinsAmnt] = useState( [] );
     const [axpAmnt, setAxpAmnt] = useState( [] );
+    const [uberAmnt, setUberAmnt] = useState([]);
+    const [snapAmnt, setSnapAmnt] = useState([]);
 
     useEffect(() => {
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
+      //stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setPinsAmnt(response));
+     // stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setPinsAmnt(response));
+      stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
     },);
 
-    const [inputs, setInputs] = useState({});
-    const handleSubmit = (event) => {
-        if (event) {
-          event.preventDefault();
+    const {register, handleSubmit} = useForm();
+    const onSubmit = (values) => {
+        console.log(values)
+        if( values.action == "buy"){
+            if(values.stock == "PINS"){stockApi.buyStocks(url.PINS, props.accountId, values.amnt)};
+            if(values.stock == "AXP"){stockApi.buyStocks(url.AXP, props.accountId, values.amnt)};
+            if(values.stock == "UBER"){stockApi.buyStocks(url.UBER, props.accountId, values.amnt)};
+            if(values.stock == "SNAP"){stockApi.buyStocks(url.SNAP, props.accountId, values.amnt)};
         }
-        stockApi.buyStocks(url.PINS,props.accountId, inputs.buyAmnt);
-    }
-
-    const handleInputChange = (event) => {
-        event.persist();
-        setInputs(inputs => ({...inputs, [event.target.name]: event.target.value}));
+        else{
+            if(values.stock == "PINS"){stockApi.sellStocks(url.PINS, props.accountId, values.amnt)};
+            if(values.stock == "AXP"){stockApi.sellStocks(url.AXP, props.accountId, values.amnt)};
+            if(values.stock == "UBER"){stockApi.sellStocks(url.UBER, props.accountId, values.amnt)};
+            if(values.stock == "SNAP"){stockApi.sellStocks(url.SNAP, props.accountId, values.amnt)};
+        }
     }
 
     return(
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt} </h3>
+                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt} 
+                UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
+                </h3>
 
-                <form onSubmit = {handleSubmit} >               
-                    <select name="action">
+                <form onSubmit = {handleSubmit(onSubmit)} >               
+                    <select name="action" ref = {register}>
                           <option value="buy">Buy</option>
                           <option value="sell">Sell</option>
                     </select>
 
-                    <select name="stock">
+                    <select  name="stock" ref = {register}>
                       <option value="PINS">Pinterest Stock</option>
+                      <option value="AXP">American Express Stock</option>
+                      <option value="UBER">Uber Stock</option>
+                      <option value="SNAP">Snapchat Stock</option>
                     </select>
 
-                    <input onChange={handleInputChange} value={inputs.buyAmnt} type="number" name="buyAmnt" min="1" />
+                    <input  type="number" name="amnt" min="1" ref = {register} />
                     <input type="submit" />
                 </form>
             </div>
