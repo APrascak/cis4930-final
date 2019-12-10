@@ -36,7 +36,6 @@ class SignOutBase extends Component {
         } else {
           datetime += + currentdate.getSeconds()
         }
-        console.log(datetime)
         this.props.firebase.db.collection('admin-logs').doc(datetime.toString()).set({
           "Action": "Sign Out",
           "Email": firebase.auth().currentUser.email
