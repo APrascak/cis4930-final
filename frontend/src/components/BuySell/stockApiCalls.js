@@ -9,11 +9,18 @@ export  function buyStocks(url, user, amnt){
             console.log(error);
           });
 }
-
+ 
 export  function sellStocks(url, user, amnt){
   return axios
         .get(url + '/sell/' + user+ "/"+amnt )
-        .then( res => {console.log(res); return getStockPrice(url)} )
+        .then( res => { 
+          if(res.data === "Sorry you do not own enough stocks to sell that amount." || res.data === "Error: insufficient user inventory."){
+              return "Bad sell amount";
+          }
+          else{
+            return getStockPrice(url);
+          }
+        } )
         .catch(function (error) {
           console.log(error);
         });

@@ -29,9 +29,16 @@ const BuySell = (props) => {
             )
         }
         else{ 
-            await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>
-                setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res}) 
-            )
+            await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
+                console.log("res : ",res)
+                if(res === "Bad sell amount") {
+                    alert("Sorry, you do not own enough stocks to sell the selected amount")
+
+                }
+                else {
+                    setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res})
+                } 
+             } )
         }
     }
 
