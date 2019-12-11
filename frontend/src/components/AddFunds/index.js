@@ -26,7 +26,8 @@ class AddFunds extends Component {
       render() {
         return (
 			<div>
-      <h2>Info from BuySell: {this.props.accountUpdate.action}, {this.props.accountUpdate.stock}, {this.props.accountUpdate.amnt}</h2>
+      <h2>Info from BuySell: {this.props.accountUpdate.action}, {this.props.accountUpdate.stock}, {this.props.accountUpdate.price}
+      , {this.props.accountUpdate.amnt}</h2>
 				<h2>Account Funds</h2>
 				<h4>Current Balance: {this.props.money}</h4>
 				<h4>Add Funds to Account</h4>
