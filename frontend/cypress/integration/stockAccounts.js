@@ -16,12 +16,20 @@ context('Actions', () => {
 		//Valid input should result in successful login to home panel
 		cy.location('pathname').should('eq', '/home')
     })
+     
+    it('Should create 3 Stock Accounts', () => {
+        cy.visit('http://localhost:3000/account')
+        //cy.contains('Sign Out').click()
+        cy.contains('Create Stock Account').click()
+        cy.contains('Create Stock Account').click()
+        cy.contains('Create Stock Account').click()
+
+		cy.contains('Buy Stocks') //FIXME
+    })
     
     it('Should sign out', () => {
         cy.visit('http://localhost:3000/account')
-        cy.contains('Sign Out').click()
-		
-		//Valid input should result in successful login to home panel
+		cy.contains('Sign Out').click()
 		cy.location('pathname').should('eq', '/signin')
     })
 })
