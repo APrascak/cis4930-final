@@ -13,6 +13,7 @@ const BuySell = (props) => {
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
     const [accountUpdate, setAccountUpdate] = useState([])
+    const [inValidSell, setinValidSell] = useState(false)
 
     useEffect(() => {
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
@@ -32,8 +33,7 @@ const BuySell = (props) => {
             await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
                 console.log("res : ",res)
                 if(res === "Bad sell amount") {
-                    alert("Sorry, you do not own enough stocks to sell the selected amount")
-
+                    setinValidSell(true);
                 }
                 else {
                     setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res})
@@ -44,6 +44,7 @@ const BuySell = (props) => {
 
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
+        setinValidSell(false)
         if(values.stock === "PINS"){  buySell(values, url.PINS) };
         if(values.stock === "AXP"){  buySell(values, url.AXP) };
         if(values.stock === "UBER"){ buySell(values, url.UBER) };
@@ -58,7 +59,7 @@ const BuySell = (props) => {
                  UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
                 </h3>
 
-                <form onSubmit = {handleSubmit(onSubmit)} >               
+                <form name = "buySellStocksForm" onSubmit = {handleSubmit(onSubmit)} >               
                     <select name="action" ref = {register}>
                           <option value="buy">Buy</option>
                           <option value="sell">Sell</option>
@@ -74,6 +75,9 @@ const BuySell = (props) => {
                     <input  type="number" name="amnt" min="1" ref = {register} />
                     <input type="submit" />
                 </form>
+                
+                <h4 name ="sellError" sstyle ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
+                
 				<AddFunds accountUpdate = {accountUpdate} money={props.money} accountId = {props.accountId}></AddFunds>
 
             </div>
