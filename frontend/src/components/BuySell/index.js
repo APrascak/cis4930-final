@@ -17,7 +17,7 @@ const BuySell = (props) => {
     useEffect(() => {
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
       stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setAxpAmnt(response));
-      //stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
+      stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
       stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
     },);
 
