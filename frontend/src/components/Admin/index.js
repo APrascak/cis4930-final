@@ -4,12 +4,14 @@ import Navigation from '../Navigation';
 import { JsonToTable } from "react-json-to-table";
 import { withFirebase } from '../Firebase';
 import { compose } from 'recompose';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Button, Container } from 'react-bootstrap';
 
 const Admin = () => (
-    <div>
+    <Container>
       <h1>Admin Dashboard</h1>
       <AdminDashboard />
-    </div>
+    </Container>
 );
 
 class AdminDashboardBase extends Component {
