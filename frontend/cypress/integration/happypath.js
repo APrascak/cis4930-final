@@ -17,12 +17,5 @@ context('Actions', () => {
 		cy.location('pathname').should('eq', '/home')
     })
     
-    it('Should sign out', () => {
-        cy.visit('http://localhost:3000/account')
-        cy.contains('Sign Out').click()
-		
-		//Valid input should result in successful login to home panel
-		cy.location('pathname').should('eq', '/signin')
-    })
 })
 

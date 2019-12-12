@@ -81,7 +81,7 @@ class SignInFormBase extends Component {
           type="password"
           placeholder="Password"
         />
-        <button disabled={isInvalid} type="submit">
+        <button disabled={isInvalid} type="submit" value="sign in button">
           Sign In
         </button>
         {error && <p>{error.message}</p>}

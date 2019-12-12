@@ -70,7 +70,7 @@ class StockAccountPage extends Component {
 
      return (
       <div>
-        <h1>Stock account number: {this.props.accountId}</h1>
+        <h1>Stock account</h1>
         {createStockAccount}
       </div>
      )
