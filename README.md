@@ -3,7 +3,6 @@
 * Alexander Prascak
 * Rahul Rudra
 * Ganna Voytseshko
-* Nozomi Watanabe
 
 ### Microservices
 Individual implementations in respective branches.  
@@ -23,3 +22,13 @@ To run the signup/login script in obs-auth branch: `python obs.py`
 ![RAYTHEON coverage report](https://github.com/APrascak/cis4930-final/blob/raytheon/coverage.png)
 ![PINTEREST coverage report](https://github.com/APrascak/cis4930-final/blob/master/Pinterest-Coverage.png)
 ![image](https://user-images.githubusercontent.com/42813401/69832779-1c287400-11fe-11ea-8f8e-278bafe2786a.png)
+
+### Links
+CI server:
+OBS deployment:
+Swagger Hub API documentation: https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0
+Style guides / lint tools: 
+
+### CIS 4930 Final Project Setup
+To create the backend of our final project, we wrote our stock microservices in Python and used the Flask micro web framework. To create the frontend of our final project, we wrote the OBS System in JavaScript and used the React library. We used the Google Firebase database for all databases. Each stock micro service stands alone and has its own database to track stock amounts. The OBS System, which tracks user account funds and user action logs, also uses its own Firebase database. For authentication we used the Cloud Firestore REST API. The Firestore authentication uses a Firebase ID token to authenticate users. 
+We used GitHub for version control and kept all code in the same repository. The python microservices are stored on separate branches from the frontend code. The python package manager we used is pip and for JavaScript we used npm. We deployed using Google App Engine and user a requirements.txt file to include dependencies for deployment. The continuous integration pipeline we used is Jenkins.
