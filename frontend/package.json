@@ -39,12 +39,8 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "cypress": "^3.7.0"
-=======
     "@testing-library/jest-dom": "^4.2.4",
     "cypress": "^3.7.0",
     "jest": "^24.9.0"
->>>>>>> testFrontend
   }
 }

@@ -76,7 +76,7 @@ const BuySell = (props) => {
                     <input type="submit" />
                 </form>
                 
-                <h4 name ="sellError" sstyle ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
+                <h4 name ="sellError" style ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
                 
 				<AddFunds accountUpdate = {accountUpdate} money={props.money} accountId = {props.accountId}></AddFunds>
 
