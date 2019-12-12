@@ -15,8 +15,11 @@ The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrasc
 
 ### Links
 CI server:
+
 OBS deployment:
+
 Swagger Hub API documentation: https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0
+
 Style guides / lint tools: 
 
 ### CIS 4930 Final Project Setup
