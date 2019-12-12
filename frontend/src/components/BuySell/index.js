@@ -30,54 +30,34 @@ const BuySell = (props) => {
     },);
 
 
-    function buySell(values, url){
+    function buySell(values, url, price){
         if(values.action == "buy"){ 
             stockApi.buyStocks(url, props.accountId, values.amnt)
-        }
-        else{ 
-            stockApi.sellStocks(url, props.accountId, values.amnt)
-        }
-    }
-
-	function manageFunds(values, price) {
-		if(values.action == "buy"){ 
 			props.firebase.users().doc(props.accountId).set({
            		Money: (props.money - (price * values.amnt)) //or whatever money stockAccount starts off with
 			})
         }
         else{ 
+            stockApi.sellStocks(url, props.accountId, values.amnt)
 			props.firebase.users().doc(props.accountId).set({
            		Money: (props.money + (price * values.amnt)) //or whatever money stockAccount starts off with
 			})
         }
-	}
-
+    }
 
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
 		if(values.stock === "PINS") (
-			buySell(values, url.PINS)
-		) 
-		if(values.stock === "PINS") (
-			manageFunds(values, stockPinPrice)
-		)
-		if(values.stock === "AXP") (
-			buySell(values, url.AXP)
+			buySell(values, url.PINS, stockPinPrice)
 		) 
 		if(values.stock === "AXP") (
-			manageFunds(values, stockAxpPrice)
-		)  
-		if(values.stock === "UBER") (
-			buySell(values, url.UBER)
+			buySell(values, url.AXP, stockAxpPrice)
 		) 
 		if(values.stock === "UBER") (
-			manageFunds(values, stockUberPrice)
+			buySell(values, url.UBER, stockUberPrice)
 		) 
 		if(values.stock === "SNAP") (
-			buySell(values, url.SNAP)
-		) 
-		if(values.stock === "SNAP") (
-			manageFunds(values, stockSnapPrice)
+			buySell(values, url.SNAP, stockSnapPrice)
 		) 
     }
 
