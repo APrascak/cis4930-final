@@ -15,24 +15,9 @@ const Navigation = () => (
     </AuthUserContext.Consumer>
   </div>
 );
+
+// Navbar: authorized users
 const NavigationAuth = () => (
-  // <Navbar bg="dark">
-  //   <Navbar.Brand>Test</Navbar.Brand>
-  //   {/* <ul>
-  //   <li>
-  //     <Link to={ROUTES.LANDING}>Landing</Link>
-  //   </li>
-  //   <li>
-  //     <Link to={ROUTES.HOME}>Home</Link>
-  //   </li>
-  //   <li>
-  //     <Link to={ROUTES.ACCOUNT}>Account</Link>
-  //   </li>
-  //   <li>
-  //     <SignOutButton />
-  //   </li> */}
-  // {/* </ul> */}
-  // </Navbar>
   <Navbar bg="dark" variant="dark" className="justify-content-between">
     <Navbar.Brand href="#">
       <img
@@ -42,7 +27,7 @@ const NavigationAuth = () => (
         height="30"
         className="d-inline-block align-top"
       />{' '}
-      React Bootstrap
+      Online Banking Service
     </Navbar.Brand>
     <Nav>
       <Nav.Link href={ROUTES.LANDING} variant="success">
@@ -58,6 +43,8 @@ const NavigationAuth = () => (
     <SignOutButton />
   </Navbar>
 );
+
+// Navbar: un-authorized users
 const NavigationNonAuth = () => (
   <Navbar bg="dark" variant="dark" className="justify-content-between">
     <Navbar.Brand href="#">
@@ -80,6 +67,5 @@ const NavigationNonAuth = () => (
     </Nav>
     <SignOutButton />
   </Navbar>
-  
 );
 export default Navigation;
