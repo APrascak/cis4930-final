@@ -30,7 +30,7 @@ context('Actions', () => {
     })
 
     it('Should be able to add sufficient funds to account', ()=>{
-        cy.get('[name="inputFunds"]').type("200")
+        cy.get('[name="inputFunds"]').type("500")
         cy.get('[name = "submitFunds"]').click()
     })
 
@@ -40,7 +40,7 @@ context('Actions', () => {
 
         cy.get('[name="action"]').select('Sell')
         cy.get('[name="stock"]').select('Pinterest Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('[name="sellError"]').contains('Invalid: you cannot sell stocks you do not own')  
     })
@@ -48,19 +48,19 @@ context('Actions', () => {
     it('Should be able to buy stocks', ()=>{
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('Pinterest Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('American Express Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('Uber Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('Snapchat Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 1, UBER Stock Amount: 1, SNAP Amount: 1")
     })
@@ -68,28 +68,27 @@ context('Actions', () => {
     it('Should be able to sell a stock', ()=>{
         cy.get('[name="action"]').select('Sell')
         cy.get('[name="stock"]').select('American Express Stock')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
         cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
     })
 
     it('Should be able to buy then sell all of a stock', ()=>{
 
         cy.get('[name="action"]').select('Buy')
-        cy.get('[name="stock"]').select('Uber Stock')
+        cy.get('[name="stock"]').select('Pinterest Stock')
         cy.get('[type="number"]').type('{backspace}')
         cy.get('[type="number"]').type('3')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
-        cy.get('[type="number"]').type('{backspace}')
+        cy.get('[name="submitStocks"]').click()
 
-        cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 0, UBER Stock Amount: 4, SNAP Amount: 1")
+        cy.get('h3').contains("PINS Stock Amount: 4, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
 
         cy.get('[name="action"]').select('Sell')
-        cy.get('[name="stock"]').select('Uber Stock')
+        cy.get('[name="stock"]').select('Pinterest Stock')
         cy.get('[type="number"]').type('{backspace}')
         cy.get('[type="number"]').type('4')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
-        cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 0, UBER Stock Amount: 0, SNAP Amount: 1")
+        cy.get('h3').contains("PINS Stock Amount: 0, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
     })
 
     it('Should not buy more stocks than has funds available', () =>{
@@ -97,7 +96,7 @@ context('Actions', () => {
         cy.get('[name="stock"]').select('American Express Stock')
         cy.get('[type="number"]').type('{backspace}')
         cy.get('[type="number"]').type('100')
-        cy.get('[name="buySellStocksForm"] > [type="submit"]').click()
+        cy.get('[name="submitStocks"]').click()
 
         cy.get('[name="buyError"]').contains('Invalid: you do not have enough funds to buy these stocks')
     })

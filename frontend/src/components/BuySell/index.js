@@ -101,7 +101,7 @@ const BuySell = (props) => {
                     </select>
 
                     <input  type="number" name="amnt" min="1" defaultValue ="1" ref = {register} />
-                    <input type="submit" />
+                    <input name = "submitStocks" type="submit" />
                 </form>
                 <h4 name ="sellError" style ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
                 <h4 name ="buyError" style ={{color:'red'}} >{inValidBuy ? 'Invalid: you do not have enough funds to buy these stocks' : ''}</h4>
