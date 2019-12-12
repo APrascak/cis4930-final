@@ -32,15 +32,19 @@ const BuySell = (props) => {
 
     function buySell(values, url, price){
         if(values.action == "buy"){ 
+			let money = (props.money - (price * values.amnt))
+			if (money < 0){
+				console.log("Not enough money")  //This is where the transaction should be cancelled!
+			}
             stockApi.buyStocks(url, props.accountId, values.amnt)
 			props.firebase.users().doc(props.accountId).set({
-           		Money: (props.money - (price * values.amnt)) //or whatever money stockAccount starts off with
+           		Money: (props.money - (price * values.amnt)) 
 			})
         }
         else{ 
             stockApi.sellStocks(url, props.accountId, values.amnt)
 			props.firebase.users().doc(props.accountId).set({
-           		Money: (props.money + (price * values.amnt)) //or whatever money stockAccount starts off with
+           		Money: (props.money + (price * values.amnt)) 
 			})
         }
     }
