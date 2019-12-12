@@ -14,7 +14,8 @@ export  function sellStocks(url, user, amnt){
   return axios
         .get(url + '/sell/' + user+ "/"+amnt )
         .then( res => { 
-          if(res.data === "Sorry you do not own enough stocks to sell that amount." || res.data === "Error: insufficient user inventory."){
+          console.log('res sell ', res)
+          if(res.data === "Sorry you do not own enough stocks to sell that amount." || res.data === "Error: insufficient user inventory." || res.data === "insufficient stocks"){
               return "Bad sell amount";
           }
           else{
@@ -33,7 +34,6 @@ export function getStockPrice(url){
            })
           .then(
             response => {
-              console.log('in get stock price res: ', response);
               return response.data.stock_price;
             }
           )

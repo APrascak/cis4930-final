@@ -30,11 +30,12 @@ class AddFunds extends Component {
 				<h4>Add Funds to Account</h4>
           		<form onSubmit={this.handleSubmit}>
 					<input
+                name="inputFunds"
 		        		type="text"
         				value={this.state.value} 
 						onChange={this.handleChange}
 					/>
-					<input type="submit" value="Submit" />
+					<input name="submitFunds" type="submit" value="Submit" />
 				</form>
 			</div>
         );

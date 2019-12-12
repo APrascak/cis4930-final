@@ -18,14 +18,15 @@ const BuySell = (props) => {
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
 
-    const [accountUpdate, setAccountUpdate] = useState([])
     const [inValidSell, setinValidSell] = useState(false)
+    const [inValidBuy, setinValidBuy] = useState(false)
 
     useEffect(() => {
 	  stockApi.getStockPrice(url.PINS).then(response => setPinStockPrice(response))
 	  stockApi.getStockPrice(url.AXP).then(response => setAxpStockPrice(response))
-	  //stockApi.getStockPrice(url.SNAP).then(response => setPinStockPrice(response))
-	  stockApi.getStockPrice(url.UBER).then(response => setUberStockPrice(response))
+	  stockApi.getStockPrice(url.SNAP).then(response => setSnapStockPrice(response))
+      stockApi.getStockPrice(url.UBER).then(response => setUberStockPrice(response))
+      
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
       stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setAxpAmnt(response));
       stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
@@ -36,37 +37,34 @@ const BuySell = (props) => {
     function buySell(values, url, price){
         if(values.action == "buy"){ 
 			let money = (props.money - (price * values.amnt))
-			if (money < 0){
-				console.log("Not enough money")  //This is where the transaction should be cancelled!
-			}
-            stockApi.buyStocks(url, props.accountId, values.amnt)
-			props.firebase.users().doc(props.accountId).set({
-           		Money: (props.money - (price * values.amnt)) 
-			})
+			if (money <= 0){
+				setinValidBuy(true)  
+            }
+            else{
+                stockApi.buyStocks(url, props.accountId, values.amnt)
+                props.firebase.users().doc(props.accountId).set({
+                    Money: (props.money - (price * values.amnt)) 
+                })
+            }
         }
         else{ 
-// buy-sell-funds
-            stockApi.sellStocks(url, props.accountId, values.amnt)
-			props.firebase.users().doc(props.accountId).set({
-           		Money: (props.money + (price * values.amnt)) 
-			})
-/*
-            await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
-                console.log("res : ",res)
+            stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
                 if(res === "Bad sell amount") {
                     setinValidSell(true);
                 }
                 else {
-                    setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res})
+                    props.firebase.users().doc(props.accountId).set({
+                        Money: (props.money + (price * values.amnt)) 
+                    })
                 } 
-             } )
-combining-buysell-funds*/
+            })     
         }
     }
 
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
-//<<<<<<< buy-sell-funds
+        setinValidSell(false)
+        setinValidBuy(false)
 		if(values.stock === "PINS") (
 			buySell(values, url.PINS, stockPinPrice)
 		) 
@@ -79,13 +77,6 @@ combining-buysell-funds*/
 		if(values.stock === "SNAP") (
 			buySell(values, url.SNAP, stockSnapPrice)
 		) 
-/*
-        setinValidSell(false)
-        if(values.stock === "PINS"){  buySell(values, url.PINS) };
-        if(values.stock === "AXP"){  buySell(values, url.AXP) };
-        if(values.stock === "UBER"){ buySell(values, url.UBER) };
-        if(values.stock === "SNAP"){  buySell(values, url.SNAP) };
- combining-buysell-funds */
     }
 
     return(
@@ -109,10 +100,11 @@ combining-buysell-funds*/
                       <option value="SNAP">Snapchat Stock</option>
                     </select>
 
-                    <input  type="number" name="amnt" min="1" ref = {register} />
+                    <input  type="number" name="amnt" min="1" defaultValue ="1" ref = {register} />
                     <input type="submit" />
                 </form>
                 <h4 name ="sellError" style ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
+                <h4 name ="buyError" style ={{color:'red'}} >{inValidBuy ? 'Invalid: you do not have enough funds to buy these stocks' : ''}</h4>
 
 				        <AddFunds money={props.money} accountId = {props.accountId}></AddFunds>
             </div>
