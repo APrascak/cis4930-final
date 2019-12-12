@@ -16,7 +16,6 @@ class AddFunds extends Component {
   }
 
   handleSubmit(event) {
-	console.log("running" + this.props.accountId)
     this.props.firebase.users().doc(this.props.accountId).set({
             Money: parseInt(this.state.value) + parseInt(this.props.money) //or whatever money stockAccount starts off with
     });
@@ -26,8 +25,6 @@ class AddFunds extends Component {
       render() {
         return (
 			<div>
-      <h2>Info from BuySell: {this.props.accountUpdate.action}, {this.props.accountUpdate.stock}, {this.props.accountUpdate.price}
-      , {this.props.accountUpdate.amnt}</h2>
 				<h2>Account Funds</h2>
 				<h4>Current Balance: {this.props.money}</h4>
 				<h4>Add Funds to Account</h4>
