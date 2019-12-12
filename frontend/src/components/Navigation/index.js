@@ -51,7 +51,7 @@ const NavigationAuth = () => (
       <Nav.Link href={ROUTES.HOME}>
         Home
       </Nav.Link>
-      <Nav.Link href={ROUTES.ACCOUNT}>
+      <Nav.Link name="navAccount" href={ROUTES.ACCOUNT}>
         Account
       </Nav.Link>
     </Nav>

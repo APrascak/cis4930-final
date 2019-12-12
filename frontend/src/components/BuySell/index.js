@@ -13,40 +13,53 @@ const BuySell = (props) => {
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
     const [accountUpdate, setAccountUpdate] = useState([])
+    const [inValidSell, setinValidSell] = useState(false)
 
     useEffect(() => {
       stockApi.getStockAmnt(url.PINS ,props.accountId).then(response => setPinsAmnt(response));
-      //stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setPinsAmnt(response));
-      //stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setPinsAmnt(response));
+      stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setAxpAmnt(response));
+      stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
       stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
     },);
 
+
+    async function buySell(values, url){
+        if(values.action == "buy"){ 
+            await stockApi.buyStocks(url, props.accountId, values.amnt).then(res => 
+                setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res}) 
+            )
+        }
+        else{ 
+            await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
+                console.log("res : ",res)
+                if(res === "Bad sell amount") {
+                    setinValidSell(true);
+                }
+                else {
+                    setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res})
+                } 
+             } )
+        }
+    }
+
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
-        setAccountUpdate(values)
-        if( values.action == "buy"){
-            if(values.stock == "PINS"){stockApi.buyStocks(url.PINS, props.accountId, values.amnt)};
-            if(values.stock == "AXP"){stockApi.buyStocks(url.AXP, props.accountId, values.amnt)};
-            if(values.stock == "UBER"){stockApi.buyStocks(url.UBER, props.accountId, values.amnt)};
-            if(values.stock == "SNAP"){stockApi.buyStocks(url.SNAP, props.accountId, values.amnt)};
-        }
-        else{
-            if(values.stock == "PINS"){stockApi.sellStocks(url.PINS, props.accountId, values.amnt)};
-            if(values.stock == "AXP"){stockApi.sellStocks(url.AXP, props.accountId, values.amnt)};
-            if(values.stock == "UBER"){stockApi.sellStocks(url.UBER, props.accountId, values.amnt)};
-            if(values.stock == "SNAP"){stockApi.sellStocks(url.SNAP, props.accountId, values.amnt)};
-        }
+        setinValidSell(false)
+        if(values.stock === "PINS"){  buySell(values, url.PINS) };
+        if(values.stock === "AXP"){  buySell(values, url.AXP) };
+        if(values.stock === "UBER"){ buySell(values, url.UBER) };
+        if(values.stock === "SNAP"){  buySell(values, url.SNAP) };
     }
 
     return(
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt} 
-                UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
+                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt}, 
+                 UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
                 </h3>
 
-                <form onSubmit = {handleSubmit(onSubmit)} >               
+                <form name = "buySellStocksForm" onSubmit = {handleSubmit(onSubmit)} >               
                     <select name="action" ref = {register}>
                           <option value="buy">Buy</option>
                           <option value="sell">Sell</option>
@@ -62,6 +75,9 @@ const BuySell = (props) => {
                     <input  type="number" name="amnt" min="1" ref = {register} />
                     <input type="submit" />
                 </form>
+                
+                <h4 name ="sellError" style ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
+                
 				<AddFunds accountUpdate = {accountUpdate} money={props.money} accountId = {props.accountId}></AddFunds>
 
             </div>
