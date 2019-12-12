@@ -17,11 +17,12 @@ const BuySell = (props) => {
     const [axpAmnt, setAxpAmnt] = useState( [] );
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
-
+    const [acctWorth, setacctWorth] = useState([]);
     const [inValidSell, setinValidSell] = useState(false)
     const [inValidBuy, setinValidBuy] = useState(false)
 
     useEffect(() => {
+       
 	  stockApi.getStockPrice(url.PINS).then(response => setPinStockPrice(response))
 	  stockApi.getStockPrice(url.AXP).then(response => setAxpStockPrice(response))
 	  stockApi.getStockPrice(url.SNAP).then(response => setSnapStockPrice(response))
@@ -31,6 +32,9 @@ const BuySell = (props) => {
       stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setAxpAmnt(response));
       stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
       stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
+
+      setacctWorth(( (pinsAmnt*stockPinPrice) + (axpAmnt*stockAxpPrice) + 
+      (uberAmnt*stockUberPrice) + (snapAmnt*stockSnapPrice) + props.money) )
     },);
 
 
@@ -83,10 +87,9 @@ const BuySell = (props) => {
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt}, 
-                 UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
-                </h3>
-
+                <h2 style ={{color:'blue'}}>Stock Account Net Worth: {acctWorth}</h2>
+                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt}, UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}</h3>
+                <h6 style ={{color:'green'}} >PINS: ${stockPinPrice} AXP: ${stockAxpPrice} UBER: ${stockUberPrice} SNAP: ${stockSnapPrice}</h6>
                 <form name = "buySellStocksForm" onSubmit = {handleSubmit(onSubmit)} >               
                     <select name="action" ref = {register}>
                           <option value="buy">Buy</option>

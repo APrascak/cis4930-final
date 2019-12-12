@@ -72,24 +72,6 @@ context('Actions', () => {
         cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
     })
 
-    it('Should be able to buy then sell all of a stock', ()=>{
-
-        cy.get('[name="action"]').select('Buy')
-        cy.get('[name="stock"]').select('Pinterest Stock')
-        cy.get('[type="number"]').type('{backspace}')
-        cy.get('[type="number"]').type('3')
-        cy.get('[name="submitStocks"]').click()
-
-        cy.get('h3').contains("PINS Stock Amount: 4, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
-
-        cy.get('[name="action"]').select('Sell')
-        cy.get('[name="stock"]').select('Pinterest Stock')
-        cy.get('[type="number"]').type('{backspace}')
-        cy.get('[type="number"]').type('4')
-        cy.get('[name="submitStocks"]').click()
-
-        cy.get('h3').contains("PINS Stock Amount: 0, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
-    })
 
     it('Should not buy more stocks than has funds available', () =>{
         cy.get('[name="action"]').select('Buy')
