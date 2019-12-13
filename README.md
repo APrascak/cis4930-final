@@ -40,3 +40,14 @@ To run the signup/login script in obs-auth branch: `python obs.py`
 ![PINTEREST coverage report](https://github.com/APrascak/cis4930-final/blob/master/Pinterest-Coverage.png)
 ![image](https://user-images.githubusercontent.com/42813401/69832779-1c287400-11fe-11ea-8f8e-278bafe2786a.png)
 
+## Milestone 3:
+### video links:
+https://www.youtube.com/watch?v=lFOByP8o01U
+### Rollback with Jenkins
+In order to successfully rollback with Jenkins you must first ensure that you have installed the rollback plugin within Jenkins. Once this has been completed open the backup manager in Jenkins. Begin by setting up the plugin with the folder you would like your backups to be saved to and selecting your perferred backup options. Once this is done you can select backup within the plugin which will save your configurations to the previously mentioned folder. Now that your backup is saved whenever a rollback is desired simply select the the restore option within the plugin and select the backup you desire.
+
+### Rollback with Travis
+Under the service tab in Travis there should be a database backup option which will save your configurations. Once this is done you can restore this by selecting database restore in the service tab previously mentioned.
+
+### Rollback with Github
+In order to reverse a commit use the revert command to undo it or you can undo the last push
