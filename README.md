@@ -14,7 +14,7 @@ The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrasc
 * Uber: https://aqueous-choir-258117.appspot.com/  
 
 ### Links
-CI server:
+CI server: https://travis-ci.com/APrascak/cis4930-final
 
 OBS deployment: https://firestore-demo-3ebe9.firebaseapp.com/
 
