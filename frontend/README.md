@@ -37,6 +37,12 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+### Rollback with Jenkins
+In order to successfully rollback with Jenkins you must first ensure that you have installed the rollback plugin within Jenkins. Once this has been completed open the backup manager in Jenkins. Begin by setting up the plugin with the folder you would like your backups to be saved to and selecting your perferred backup options. Once this is done you can select backup within the plugin which will save your configurations to the previously mentioned folder. Now that your backup is saved whenever a rollback is desired simply select the the restore option within the plugin and select the backup you desire.
+
+### Rollback with Github
+In order to reverse a commit use the revert command to undo it or you can undo the last push
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
