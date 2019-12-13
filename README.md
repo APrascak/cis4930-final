@@ -16,7 +16,7 @@ The Swagger Documentation is [here.](https://app.swaggerhub.com/apis-docs/APrasc
 ### Links
 CI server:
 
-OBS deployment:
+OBS deployment: https://firestore-demo-3ebe9.firebaseapp.com/
 
 Swagger Hub API documentation: https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0
 
