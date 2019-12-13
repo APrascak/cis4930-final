@@ -18,6 +18,8 @@ CI server: https://travis-ci.com/APrascak/cis4930-final
 
 OBS deployment: https://firestore-demo-3ebe9.firebaseapp.com/
 
+Code/Test/Configuration/Infrastructure Overview: https://www.youtube.com/watch?v=lFOByP8o01U
+
 Swagger Hub API documentation: https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0
 
 Style guides / lint tools: http://google.github.io/styleguide/pyguide.html
