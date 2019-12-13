@@ -17,10 +17,9 @@
     "recompose": "^0.30.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "my-server -p 3030",
+    "cy:run": "cypress run --record --key=abc123",
+    "test": "start-server-and-test start http://localhost:3030 cy:run",
     "cypress:open": "cypress open"
   },
   "eslintConfig": {
