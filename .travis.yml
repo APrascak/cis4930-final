@@ -7,7 +7,7 @@ cache:
 script:
   - cd frontend
   - npm install
-  - npm start & wait-on http://localhost:8080
-  - cypress run
+  - npm start & wait-on http://localhost:3000
+  - npx cypress open
 on:
   branch: travis
