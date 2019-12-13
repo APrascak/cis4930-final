@@ -54,7 +54,7 @@ def test_get_stock_price(test_client):
     response = test_client.get('/getStockPrice')
 
     assert response.status_code == 200
-    assert expectedPrice == json.loads(response.data)['stock_price ']
+    assert expectedPrice == json.loads(response.data)['stock_price']
 
 
 def test_get_stock_price_helper(test_client):
@@ -73,20 +73,28 @@ def test_get_obs_holdings(mock_obsGetAvailableStocks, test_client):
 def test_get_user_holdings(mock_getUserHoldingsDb, test_client):
 
     mock_getUserHoldingsDb.return_value = 10
-    response = test_client.get('/getUserHoldings/234567')
+    response = test_client.get('/getUserHoldings/test')
     assert response.status_code == 200
-    assert (json.loads(response.data)["stock_amnt "]) == 10
+    assert (json.loads(response.data)["shares"]) == 10
 
 #
 @patch('main.buyStock')
 def test_user_buy_stock(mock_buyStock, test_client):
-    mock_buyStock.return_value = 0
-    response = test_client.get('/buyStock/234567/10')
+    mock_buyStock.return_value = {"obs_shares": 4810, "user_shares": 13}
+    response = test_client.get('/buy/test/10')
     assert response.status_code == 200
 
 
 @patch('main.sellStock')
 def test_user_sell_Stock(mock_sellStock, test_client):
     mock_sellStock.return_value = 0
-    response = test_client.get('/sellStock/234567/100')
+    response = test_client.get('/sell/test/100')
     assert response.status_code == 200
+
+
+@patch('main.sellStock')
+def test_user_sell_too_many_stocks(mock_sellStock, test_client):
+    mock_sellStock.return_value = "insufficient stocks"
+    response = test_client.get('/sell/test/100')
+    assert response.status_code == 200
+    assert b"insufficient stocks" in response.data
