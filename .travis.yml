@@ -8,6 +8,6 @@ script:
   - cd frontend
   - npm install
   - npm start & 
-  - npx cypress open
+  - npx cypress open --record
 on:
   branch: travis
