@@ -6,6 +6,8 @@ import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
 import AddFunds from '../AddFunds';
+import { withFirebase } from '../Firebase';
+
 
 const BuySell = (props) => {
     const [pinsAmnt, setPinsAmnt] = useState( [] );
@@ -25,9 +27,34 @@ const BuySell = (props) => {
 
     async function buySell(values, url){
         if(values.action == "buy"){ 
-            await stockApi.buyStocks(url, props.accountId, values.amnt).then(res => 
+            await stockApi.buyStocks(url, props.accountId, values.amnt).then(res => {
                 setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res}) 
-            )
+                var currentdate = new Date();
+                var datetime = currentdate.getDate() + "-"
+                                + (currentdate.getMonth()+1)  + "-" 
+                                + currentdate.getFullYear() + " @ "  
+                if (currentdate.getHours() < 10) {
+                datetime += "0" + currentdate.getHours() + ":"
+                } else {
+                datetime += currentdate.getHours() + ":"
+                }
+                if (currentdate.getMinutes() < 10) {
+                datetime += "0" + currentdate.getMinutes() + ":"
+                } else {
+                datetime += currentdate.getMinutes() + ":"
+                }
+                if (currentdate.getSeconds() < 10) {
+                datetime += "0" + currentdate.getSeconds()
+                } else {
+                datetime += + currentdate.getSeconds()
+                }
+                props.firebase.db.collection('transaction-logs').doc(datetime.toString()).set({
+                    "Action": values.action,
+                    "Account": props.accountId,
+                    "Stock": values.stock,
+                    "Amount": values.amnt
+                  })
+            })
         }
         else{ 
             await stockApi.sellStocks(url, props.accountId, values.amnt).then(res =>{
@@ -37,7 +64,32 @@ const BuySell = (props) => {
                 }
                 else {
                     setAccountUpdate({"action":values.action,"stock":values.stock,"amnt":values.amnt,"price":res})
-                } 
+                    var currentdate = new Date();
+                    var datetime = currentdate.getDate() + "-"
+                                    + (currentdate.getMonth()+1)  + "-" 
+                                    + currentdate.getFullYear() + " @ "  
+                    if (currentdate.getHours() < 10) {
+                    datetime += "0" + currentdate.getHours() + ":"
+                    } else {
+                    datetime += currentdate.getHours() + ":"
+                    }
+                    if (currentdate.getMinutes() < 10) {
+                    datetime += "0" + currentdate.getMinutes() + ":"
+                    } else {
+                    datetime += currentdate.getMinutes() + ":"
+                    }
+                    if (currentdate.getSeconds() < 10) {
+                    datetime += "0" + currentdate.getSeconds()
+                    } else {
+                    datetime += + currentdate.getSeconds()
+                    }
+                    props.firebase.db.collection('transaction-logs').doc(datetime.toString()).set({
+                        "Action": values.action,
+                        "Account": props.accountId,
+                        "Stock": values.stock,
+                        "Amount": values.amnt
+                    })
+                    } 
              } )
         }
     }

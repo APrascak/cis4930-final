@@ -20,7 +20,8 @@ class AdminDashboardBase extends Component {
     super(props)
   }
 
-  state = { logData: {} }
+  state = { logData: {}, transactionLogs: {} }
+  
 
   // Retrieves admin logs from database
   // Updates state after retrieval
@@ -38,14 +39,33 @@ class AdminDashboardBase extends Component {
           console.log(info)
           logData.Logs.push(info) // Adds individual documents to logData
         })
-        this.setState({ logData }) // Sets state with queried results
+        this.setState({ logData: logData}) // Sets state with queried results
+        console.log(this.state.transactionLogs)
       })
+
+  test1 = this.props.firebase.db.collection('transaction-logs')
+  .get()
+    .then(snapshot => {
+      const transactionLogs = { // Formats admin logs into new variable
+        "Transactions": [
+
+        ]
+      }
+      snapshot.forEach(doc => {
+        var info = doc.data()
+        info['TimeStamp'] = doc.id
+        console.log(info)
+        transactionLogs.Transactions.push(info) // Adds individual documents to logData
+      })
+      this.setState({ transactionLogs: transactionLogs })
+    })
 
   // Render: table
   // Uses JsonToTable so that logs are displayed regardless of log attributes
   render() {
     return ( 
       <div>
+        <JsonToTable json={this.state.transactionLogs}/>
         <JsonToTable json={this.state.logData}/> 
       </div>
     );
