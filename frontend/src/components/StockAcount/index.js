@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { AuthUserContext, withAuthorization } from '../Session';
 import BuySell from '../BuySell'
-      
+
 
 import CreateStockAccount from '../CreateStockAccount';
 import UserList from '../UserList';
@@ -65,7 +65,7 @@ class StockAccountPage extends Component {
       createStockAccount = <div><BuySell accountId={this.props.accountId} money={this.state.stockAccountMoney}/></div>;
     }
     else{
-      createStockAccount = <CreateStockAccount accountId={this.props.accountId}></CreateStockAccount>;
+      createStockAccount = <CreateStockAccount accountId={this.props.accountId} firebase={this.props.firebase}></CreateStockAccount>;
     }
 
      return (

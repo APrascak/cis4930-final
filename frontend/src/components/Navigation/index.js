@@ -55,7 +55,7 @@ const NavigationNonAuth = () => (
         height="30"
         className="d-inline-block align-top"
       />{' '}
-      React Bootstrap
+      Online Banking System
     </Navbar.Brand>
     <Nav>
       <Nav.Link href={ROUTES.LANDING}>

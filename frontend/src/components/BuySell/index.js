@@ -6,6 +6,8 @@ import axios from 'axios';
 import * as stockApi from './stockApiCalls'
 import * as url from './stockApiUrls'
 import AddFunds from '../AddFunds';
+import { withFirebase } from '../Firebase';
+// test
 
 const BuySell = (props) => {
 	
@@ -17,11 +19,12 @@ const BuySell = (props) => {
     const [axpAmnt, setAxpAmnt] = useState( [] );
     const [uberAmnt, setUberAmnt] = useState([]);
     const [snapAmnt, setSnapAmnt] = useState([]);
-
+    const [acctWorth, setacctWorth] = useState([]);
     const [inValidSell, setinValidSell] = useState(false)
     const [inValidBuy, setinValidBuy] = useState(false)
 
     useEffect(() => {
+       
 	  stockApi.getStockPrice(url.PINS).then(response => setPinStockPrice(response))
 	  stockApi.getStockPrice(url.AXP).then(response => setAxpStockPrice(response))
 	  stockApi.getStockPrice(url.SNAP).then(response => setSnapStockPrice(response))
@@ -31,17 +34,44 @@ const BuySell = (props) => {
       stockApi.getStockAmnt(url.AXP ,props.accountId).then(response => setAxpAmnt(response));
       stockApi.getStockAmnt(url.SNAP ,props.accountId).then(response => setSnapAmnt(response));
       stockApi.getStockAmnt(url.UBER ,props.accountId).then(response => setUberAmnt(response));
-    },);
 
+      setacctWorth(( (pinsAmnt*stockPinPrice) + (axpAmnt*stockAxpPrice) + 
+      (uberAmnt*stockUberPrice) + (snapAmnt*stockSnapPrice) + props.money) )
+    },);
 
     function buySell(values, url, price){
         if(values.action == "buy"){ 
-			let money = (props.money - (price * values.amnt))
-			if (money <= 0){
-				setinValidBuy(true)  
+            let money = (props.money - (price * values.amnt))
+            if (money <= 0){
+                setinValidBuy(true)  
             }
             else{
                 stockApi.buyStocks(url, props.accountId, values.amnt)
+                var currentdate = new Date();
+                var datetime = currentdate.getDate() + "-"
+                                + (currentdate.getMonth()+1)  + "-" 
+                                + currentdate.getFullYear() + " @ "  
+                if (currentdate.getHours() < 10) {
+                datetime += "0" + currentdate.getHours() + ":"
+                } else {
+                datetime += currentdate.getHours() + ":"
+                }
+                if (currentdate.getMinutes() < 10) {
+                datetime += "0" + currentdate.getMinutes() + ":"
+                } else {
+                datetime += currentdate.getMinutes() + ":"
+                }
+                if (currentdate.getSeconds() < 10) {
+                datetime += "0" + currentdate.getSeconds()
+                } else {
+                datetime += + currentdate.getSeconds()
+                }
+                props.firebase.db.collection('transaction-logs').doc(datetime.toString()).set({
+                    "Action": values.action,
+                    "Account": props.accountId,
+                    "Stock": values.stock,
+                    "Amount": values.amnt
+                })
                 props.firebase.users().doc(props.accountId).set({
                     Money: (props.money - (price * values.amnt)) 
                 })
@@ -53,6 +83,31 @@ const BuySell = (props) => {
                     setinValidSell(true);
                 }
                 else {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getDate() + "-"
+                                    + (currentdate.getMonth()+1)  + "-" 
+                                    + currentdate.getFullYear() + " @ "  
+                    if (currentdate.getHours() < 10) {
+                    datetime += "0" + currentdate.getHours() + ":"
+                    } else {
+                    datetime += currentdate.getHours() + ":"
+                    }
+                    if (currentdate.getMinutes() < 10) {
+                    datetime += "0" + currentdate.getMinutes() + ":"
+                    } else {
+                    datetime += currentdate.getMinutes() + ":"
+                    }
+                    if (currentdate.getSeconds() < 10) {
+                    datetime += "0" + currentdate.getSeconds()
+                    } else {
+                    datetime += + currentdate.getSeconds()
+                    }
+                    props.firebase.db.collection('transaction-logs').doc(datetime.toString()).set({
+                        "Action": values.action,
+                        "Account": props.accountId,
+                        "Stock": values.stock,
+                        "Amount": values.amnt
+                    })
                     props.firebase.users().doc(props.accountId).set({
                         Money: (props.money + (price * values.amnt)) 
                     })
@@ -60,6 +115,7 @@ const BuySell = (props) => {
             })     
         }
     }
+
 
     const {register, handleSubmit} = useForm();
     const onSubmit = (values) => {
@@ -83,10 +139,9 @@ const BuySell = (props) => {
         <AuthUserContext.Consumer>
             {authUser => (
             <div>
-                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt}, 
-                 UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}
-                </h3>
-
+                <h2 style ={{color:'blue'}}>Stock Account Net Worth: {acctWorth}</h2>
+                <h3>PINS Stock Amount: {pinsAmnt}, AXP Stock Amount: {axpAmnt}, UBER Stock Amount: {uberAmnt}, SNAP Amount: {snapAmnt}</h3>
+                <h6 style ={{color:'green'}} >PINS: ${stockPinPrice} AXP: ${stockAxpPrice} UBER: ${stockUberPrice} SNAP: ${stockSnapPrice}</h6>
                 <form name = "buySellStocksForm" onSubmit = {handleSubmit(onSubmit)} >               
                     <select name="action" ref = {register}>
                           <option value="buy">Buy</option>
@@ -101,7 +156,7 @@ const BuySell = (props) => {
                     </select>
 
                     <input  type="number" name="amnt" min="1" defaultValue ="1" ref = {register} />
-                    <input type="submit" />
+                    <input name = "submitStocks" type="submit" />
                 </form>
                 <h4 name ="sellError" style ={{color:'red'}} >{inValidSell ? 'Invalid: you cannot sell stocks you do not own' : ''}</h4>
                 <h4 name ="buyError" style ={{color:'red'}} >{inValidBuy ? 'Invalid: you do not have enough funds to buy these stocks' : ''}</h4>
