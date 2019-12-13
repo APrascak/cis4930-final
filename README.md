@@ -20,7 +20,7 @@ OBS deployment: https://firestore-demo-3ebe9.firebaseapp.com/
 
 Swagger Hub API documentation: https://app.swaggerhub.com/apis-docs/APrascak/cis-team-5/1.0.0
 
-Style guides / lint tools: 
+Style guides / lint tools: http://google.github.io/styleguide/pyguide.html
 
 ### CIS 4930 Final Project Setup
 To create the backend of our final project, we wrote our stock microservices in Python and used the Flask micro web framework. To create the frontend of our final project, we wrote the OBS System in JavaScript and used the React library. We used the Google Firebase database for all databases. Each stock micro service stands alone and has its own database to track stock amounts. The OBS System, which tracks user account funds and user action logs, also uses its own Firebase database. For authentication we used the Cloud Firestore REST API. The Firestore authentication uses a Firebase ID token to authenticate users. 
