@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "stable"
+cache:
+  directories:
+    - node_modules
+script:
+  - cd frontend
+  - npm install
+  - npm start & 
+  - npx cypress run
+on:
+  branch: travis
