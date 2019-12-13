@@ -2,8 +2,9 @@ describe('View OBS dashboard', function() {
     context('Actions', () => {
 	beforeEach(() => {
         cy.visit('http://localhost:3000/account')
-	})
-
+    })
+    
+    //#Acceptance
 	it('Attempts to sign in user and see dashboard', () => {
         //user signs in and is able to see their dashboard
         cy.visit('http://localhost:3000/signin')

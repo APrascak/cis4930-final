@@ -3,6 +3,7 @@ context('Actions', () => {
 		cy.visit('http://localhost:3000/')
 	})
 
+    //#Integration
 	it('Attempts to sign up a user', () => {
         //signs in user to check stocks
         let num = Math.round(Math.random() * 10000000)
@@ -18,6 +19,8 @@ context('Actions', () => {
 		cy.location('pathname').should('eq', '/home')
     })
      
+
+    //#Acceptance
     it('Should create 3 Stock Accounts', () => {
         //creates 3 Stock Accounts within User Account
         cy.visit('http://localhost:3000/account')

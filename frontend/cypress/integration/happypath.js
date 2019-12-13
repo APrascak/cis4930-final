@@ -3,6 +3,7 @@ context('Actions', () => {
 		cy.visit('http://localhost:3000/')
 	})
 
+	//#Integration
 	it('Attempts to sign up a user with valid password length', () => {
         let num = Math.round(Math.random() * 10000000)
         cy.visit('http://localhost:3000/signup')

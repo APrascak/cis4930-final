@@ -3,6 +3,7 @@ context('Actions', () => {
 		//cy.visit('http://localhost:3000/')
 	})
 
+    //#Integration
 	it('Should sign up new user and navigate to Account page', () => {
         let num = Math.round(Math.random() * 10000000)
         cy.visit('http://localhost:3000/signup')
@@ -18,6 +19,7 @@ context('Actions', () => {
         
     })
      
+    //#Acceptance
     it('Should navigate to Account and create a Stock Account', () => {
         cy.visit('http://localhost:3000/home')
         cy.get('[name="navAccount"]').click()
@@ -25,15 +27,18 @@ context('Actions', () => {
         cy.get('[name="buySellStocksForm"]')
     })
 
+    //#Integration
     it('Should make sure new account starts with zero of each stock', ()=>{
         cy.get('h3').contains("PINS Stock Amount: 0, AXP Stock Amount: 0, UBER Stock Amount: 0, SNAP Amount: 0")
     })
 
+    //#Integration
     it('Should be able to add sufficient funds to account', ()=>{
         cy.get('[name="inputFunds"]').type("500")
         cy.get('[name = "submitFunds"]').click()
     })
 
+    //#Integration
     it('Should make sure user cannot sell stock that they do not own', () => {
         const stub = cy.stub()
         cy.on('window:alert', stub)
@@ -45,6 +50,7 @@ context('Actions', () => {
         cy.get('[name="sellError"]').contains('Invalid: you cannot sell stocks you do not own')  
     })
 
+    //#Acceptance
     it('Should be able to buy stocks', ()=>{
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('Pinterest Stock')
@@ -65,6 +71,7 @@ context('Actions', () => {
         cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 1, UBER Stock Amount: 1, SNAP Amount: 1")
     })
     
+    //#Acceptance
     it('Should be able to sell a stock', ()=>{
         cy.get('[name="action"]').select('Sell')
         cy.get('[name="stock"]').select('American Express Stock')
@@ -72,7 +79,7 @@ context('Actions', () => {
         cy.get('h3').contains("PINS Stock Amount: 1, AXP Stock Amount: 0, UBER Stock Amount: 1, SNAP Amount: 1")
     })
 
-
+    //#Integration
     it('Should not buy more stocks than has funds available', () =>{
         cy.get('[name="action"]').select('Buy')
         cy.get('[name="stock"]').select('American Express Stock')

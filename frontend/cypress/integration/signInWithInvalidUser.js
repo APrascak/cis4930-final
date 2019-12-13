@@ -4,6 +4,7 @@ describe('Sign in with invalid credentials for user', function() {
         cy.visit('http://localhost:3000/account')
 	})
 
+    //#Integration
 	it('Attempts to sign in user with invalid email', () => {
         //given this invalid email
         cy.visit('http://localhost:3000/signin')
@@ -15,6 +16,7 @@ describe('Sign in with invalid credentials for user', function() {
         cy.url().should('not.include', '/home')
     })
 
+    //#Integration
     it('Attempts to sign in user with invalid password', () => {
         //password does not match the criteria
         cy.visit('http://localhost:3000/signin')

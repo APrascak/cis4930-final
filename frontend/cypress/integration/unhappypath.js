@@ -3,6 +3,7 @@ context('Actions', () => {
 		cy.visit('http://localhost:3000/signup')
 	})
 
+	//#Integration
 	//It will go to the signup page to run these tests.
 	it('Attempts to signup a user with password < 8 chars', () => {
 		cy.get('input[name="username"]').type('test user')
@@ -14,7 +15,8 @@ context('Actions', () => {
 		//Should not redirect
 		cy.url().should('not.include', '/home')
 	})
-    
+	
+	//#Integration
     //Invalid email fails
 	it('Attempts to signup a user with invalid email', () => {
         cy.get('input[name="username"]').type('test user')
