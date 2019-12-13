@@ -7,6 +7,6 @@ cache:
 script:
   - cd frontend
   - npm install
-  - npm start & npx cypress open
+  - npm start & node_modules/.bin/cypress open
 on:
   branch: travis
